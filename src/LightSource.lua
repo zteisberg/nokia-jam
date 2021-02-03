@@ -46,6 +46,8 @@ function LightSource:disableAnimation()
     self.animate = false
 end
 
+-- There are seven different dithering styles. The table of falloff values
+-- determines at what % of the radius to transition to the next one 
 function LightSource:calcPoints()
 
     self.points = {}
@@ -55,12 +57,15 @@ function LightSource:calcPoints()
         thresholds[i] = ( radius * self.falloff[i] )^2
     end
     
+    -- loop through x and y values using (0,0) as origin
     local y = -radius
     while y < radius do
         y = y + 1
+
+        -- Time saving: calculate chord length to reduce number of iterations
         local chord = math.floor(math.sqrt(radius^2-y^2)+0.5)
         local x = -chord
-        x = x - (4-x%4) + 1
+        x = x - (4-x%4) + 1 -- Standardize starting position of x-values
         while x < chord do
             local distSqr = x^2 + y^2
             x = x + 1
