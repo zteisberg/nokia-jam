@@ -11,7 +11,8 @@ fpsTimer = 0
 globalX, globalY = 70, 118
 
 background = love.graphics.newImage('assets/sideA.png')
-tvLight = LightSource(110, 160, 40, {.5,.6,.7,.8,.9})
+--tvLight = LightSource(110, 160, 40, {.5,.6,.7,.8,.9})
+tvLight = LightSource(110, 170, 40, {.5,.6,.7,.8,.9}, math.pi / 8, 6 *(math.pi/8))
 tvLight:enableAnimation(40,60,0.25)
 
 function love.load()
