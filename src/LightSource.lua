@@ -1,13 +1,14 @@
 LightSource = Class{}
 
-function LightSource:init(x,y,radius,falloff,angle,arc)
+function LightSource:init(x,y,radius,falloff, globalPositioning)
+    self.global = globalPositioning == nil and true or globalPositioning
     self.x = x
     self.y = y
-    self.radius = radius        -- radius of light source
-    self.falloff = falloff      -- measured in percent of radius
-    self.angle = angle or 0 -- angle offset of the start of the lightsource
-    self.arc = arc or (math.pi * 2) -- width of the light source arc in radians
-    for i = #falloff + 1, 7 do  -- unfilled falloff values default to 100%
+    self.radius = radius            -- radius of light source
+    self.falloff = falloff          -- measured in percent of radius
+    self.angle = 0                  -- angle offset of the start of the lightsource
+    self.arc = math.pi * 2          -- width of the light source arc in radians
+    for i = #falloff + 1, 7 do      -- unfilled falloff values default to 100%
         falloff[i] = 1
     end
     self.animate = false
@@ -34,6 +35,12 @@ end
 function LightSource:render(dt)
     love.graphics.setColor(COLOR_LIGHT)
     love.graphics.points(self.points)
+end
+
+function LightSource:setAngle(arcAngle, arcOffset)
+    self.angle = arcAngle
+    self.arc = arcOffset
+    self:calcPoints()
 end
 
 function LightSource:enableAnimation(startSize,endSize,step)
@@ -63,10 +70,10 @@ end
 function LightSource:calcPoints()
 
     self.points = {}
-    local radius = math.floor( self.radius)
-    local start_x = radius * math.cos(self.angle) * -1
-    local end_x = radius * math.cos(self.angle + self.arc) * -1
+    local radius = math.floor( self.radius + 0.5)
+    local start_x = -radius * math.cos(self.angle)
     local start_y = (radius * math.sin(self.angle))
+    local end_x = -radius * math.cos(self.angle + self.arc)
     local end_y = (radius * math.sin(self.angle + self.arc))
     local thresholds = {}
     for i = 1, #self.falloff do
@@ -81,7 +88,7 @@ function LightSource:calcPoints()
         -- Time saving: calculate chord length to reduce number of iterations
         local chord = math.floor(math.sqrt(radius^2-y^2)+0.5)
         local x = -chord
-        x = x - (4-x%4) + 1 -- Standardize starting position of x-values
+        x = x - (2-x%2) + 1 -- Standardize starting position of x-values
         while x < chord do
             local distSqr = x^2 + y^2
             x = x + 1
@@ -108,7 +115,10 @@ function LightSource:calcPoints()
                     end
                 end
             end
-            self.points[#self.points+1] = {self.x+x-globalX, self.y+y-globalY, 215/255, 240/255, 232/255}
+            self.points[#self.points+1] = {
+                x + self.x - (self.global and globalX or 0),
+                y + self.y - (self.global and globalY or 0),
+            }
             ::continue::
         end
     end
