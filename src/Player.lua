@@ -1,40 +1,49 @@
 Player = Class{__includes = Entity}
 
 function Player:init(x,y,animations,active,globalPositioning)
-    Entity:init(x,y,globalPositioning)
+    Entity.init(self,x,y,globalPositioning)
     self.animations = animations
     self.active = active or false
-    Player:setIdle()
 end
 
 function Player:update()
-    Entity:update()
+    Entity.update(self)
 
     if love.keyboard.keysPressed['a'] == love.keyboard.keysPressed['d'] then
-        Player:setIdle()
+        Player.setIdle(self)
     else
         if love.keyboard.keysPressed['a'] then
-            Entity:setDirection(-1)
-            Player:setWalk()
-            if Entity:getX() > 20 then
-                Entity:move(-1,0)
-            else globalX = globalX - 1 end
+            Player.setWalk(self)
+            self.direction = -1
+            if self.x < VIRTUAL_WIDTH-20 then
+                globalX = globalX - 1
+            else  self.x = self.x - 1 end
         end
         if love.keyboard.keysPressed['d'] then
-            Entity:setDirection(1)
-            Player:setWalk()
-            if Entity:getX() < VIRTUAL_WIDTH - 20 then
-                Entity:move(1,0)
-            else globalX = globalX + 1 end
+            Player.setWalk(self)
+            self.direction = 1
+            if self.x > 20 then
+                globalX = globalX + 1
+            else  self.x = self.x + 1 end
         end
+    end
+
+    if self.direction == 1 then
+        if self.x > 25 then
+            globalX = globalX + 1
+            self.x = self.x - 1
+        end
+    elseif self.x < VIRTUAL_WIDTH-25 then
+        globalX = globalX - 1
+        self.x = self.x + 1
     end
 
 end
 
 function Player:setIdle()
-    Entity:setAnimation(self.animations['idle'])
+    Entity.setAnimation(self, self.animations['idle'])
 end
 
 function Player:setWalk()
-    Entity:setAnimation(self.animations['walk'])
+    Entity.setAnimation(self, self.animations['walk'])
 end

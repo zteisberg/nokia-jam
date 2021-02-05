@@ -2,12 +2,12 @@ Sprites = {}
 
 function Sprites:Load()
     textures = {
-        ['CharacterCycles'] = love.graphics.newImage('assets/Cycles1.png'),
+        ['FatherCycles1'] = love.graphics.newImage('assets/FatherCycles1.png'),
     }
     cycles = {
-        ['DadIdle'] = ExtractDadIdle(textures['CharacterCycles']),
-        ['DadWalk'] = ExtractDadWalk(textures['CharacterCycles']),
-        ['DadWalkFL'] = ExtractDadWalkFL(textures['CharacterCycles']),
+        ['DadIdle'] = ExtractDadIdle(textures['FatherCycles1']),
+        ['DadWalk'] = ExtractDadWalk(textures['FatherCycles1']),
+        ['DadWalkFL'] = ExtractDadWalkFL(textures['FatherCycles1']),
     }
     sprites = {
         ['SideA_TV'] = love.graphics.newImage('assets/sideA_TV.png')
@@ -30,7 +30,7 @@ function ExtractSprites(spriteSheet, width, height)
     return sprites
 end
 
-function ExtractCycle(spriteSheet, width, height, xStart, xGap, xEnd, yStart)
+function ExtractCycle(spriteSheet, width, height, xStart, yStart, xGap, xEnd)
     local columns = (xEnd-xStart+xGap) / (width+xGap)
     local cycle = {}
 
@@ -45,11 +45,15 @@ function ExtractCycle(spriteSheet, width, height, xStart, xGap, xEnd, yStart)
 end
 
 function ExtractDadIdle(spriteSheet)
-    return ExtractCycle(spriteSheet, 17, 32, 5, 13, 262, 1)
+    return ExtractCycle(spriteSheet, 17, 32, 5, 1, 13, 262)
+end
+
+function ExtractDadIdleFL(spriteSheet)
+    return ExtractCycle(spriteSheet, 24, 32, 5, 36, 6, 269)
 end
 
 function ExtractDadWalk(spriteSheet)
-    return ExtractCycle(spriteSheet, 17, 32, 5, 13, 202, 71)
+    return ExtractCycle(spriteSheet, 22, 32, 2, 71, 8, 234)
 end
 
 function ExtractDadWalkFL(spriteSheet)
