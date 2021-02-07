@@ -1,17 +1,15 @@
-LightSource = Class{}
+LightSource = Class{__includes = Entity}
 
-function LightSource:init(x, y, radius, falloff, angle, rotation)
-    self.pos = {x=x, y=y}
-    self.relative = true
-    self.radius = radius                -- radius of light source
-    self.falloff = falloff              -- measured in percent of radius
-    self.rotation = rotation or 0       -- angle offset of the start of the lightsource
-    self.angle = angle or math.pi * 2   -- width of the light source arc in radians
-    for i = #falloff + 1, 6 do          -- unfilled falloff values default to 100%
+function LightSource:init(x, y, radius, falloff)
+    Entity.init(self, x, y)
+    self.visible = true
+    self.radius = radius             -- radius of light source
+    self.falloff = falloff           -- measured in percent of radius
+    self.rotation = 0                -- angle offset of the start of the lightsource
+    self.angle = math.pi * 2         -- width of the light source arc in radians
+    for i = #self.falloff + 1, 6 do  -- unfilled falloff values default to 100%
         self.falloff[i] = 1
     end
-    
-    self.calcVectors(self)
     self.frames = {self.calcPoints(self)}
     self.frame = 1
     self.frameTotal = 1
@@ -58,16 +56,18 @@ function LightSource:update(dt)
 end
 
 function LightSource:render()
-    local translation = {}
-    for i, point in pairs(self.frames[self.frame]) do
-        if self.angle > math.pi or isInsideSector(point[1], point[2], self.angleVec1.x, self.angleVec1.y, self.angleVec2.x, self.angleVec2.y) then
-            translation[#translation+1] = {
-                point[1] + self.pos.x + (self.relative and camera.x or 0),
-                point[2] + self.pos.y + (self.relative and camera.y or 0),
-            }
+    if self.visible then
+        local translation = {}
+        for i, point in pairs(self.frames[self.frame]) do
+            if self.angle > math.pi or isInsideSector(point[1], point[2], self.angleVec1.x, self.angleVec1.y, self.angleVec2.x, self.angleVec2.y) then
+                translation[#translation+1] = {
+                    point[1] + self.pos.x + (self.relative and camera.x or 0),
+                    point[2] + self.pos.y + (self.relative and camera.y or 0),
+                }
+            end
         end
+        love.graphics.points(translation)
     end
-    love.graphics.points(translation)
 end
 
 function LightSource:setTransform(x, y, angle, rotation)
@@ -101,12 +101,12 @@ function LightSource:changeRadius(dr)
 end
 
 function LightSource:setAnimation(startSize,endSize,step)
-    self.animateStep = step or 0.25
-    self.animateStart = startSize or radius
-    self.animateEnd = endSize or radius + 20
+    self.animateStep = step or 1
+    self.animateStart = startSize or self.radius
+    self.animateEnd = endSize or self.radius * 1.1
     self.animateFlag = true
     self.frameToAnimate = 1
-    self.frameTotal = math.ceil((endSize - startSize) / step)*2
+    self.frameTotal = math.ceil((endSize - startSize) / self.animateStep)*2
     if self.radius < startSize then
         self.radius = startSize
         self.frames = {self.calcPoints(self)}

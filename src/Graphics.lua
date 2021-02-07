@@ -1,21 +1,21 @@
-Sprites = {}
+Graphics = Class{}
 
-function Sprites:Load()
+function Graphics:Load()
     textures = {
         ['FatherCycles1'] = love.graphics.newImage('assets/FatherCycles1.png'),
     }
     cycles = {
-        ['DadIdle'] = ExtractDadIdle(textures['FatherCycles1']),
-        ['DadIdleFL'] = ExtractDadIdleFL(textures['FatherCycles1']),
-        ['DadWalk'] = ExtractDadWalk(textures['FatherCycles1']),
-        ['DadWalkFL'] = ExtractDadWalkFL(textures['FatherCycles1']),
+        ['DadIdle'] = self:ExtractDadIdle(textures['FatherCycles1']),
+        ['DadWalk'] = self:ExtractDadWalk(textures['FatherCycles1']),
+        ['DadIdleFL'] = self:ExtractDadIdleFL(textures['FatherCycles1']),
+        ['DadWalkFL'] = self:ExtractDadWalkFL(textures['FatherCycles1']),
     }
     sprites = {
         ['SideA_TV'] = love.graphics.newImage('assets/sideA_TV.png')
     }
 end
 
-function ExtractSprites(spriteSheet, width, height)
+function Graphics:ExtractSprites(spriteSheet, width, height)
     local rows = spriteSheet:getWidth()  / width
     local columns = spriteSheet:getHeight() / height
     local sprites = {}
@@ -31,7 +31,7 @@ function ExtractSprites(spriteSheet, width, height)
     return sprites
 end
 
-function ExtractCycle(spriteSheet, width, height, xStart, yStart, xGap, xEnd)
+function Graphics:ExtractCycle(spriteSheet, width, height, xStart, yStart, xGap, xEnd)
     local columns = (xEnd-xStart+xGap) / (width+xGap)
     local cycle = {}
 
@@ -45,18 +45,18 @@ function ExtractCycle(spriteSheet, width, height, xStart, yStart, xGap, xEnd)
     return cycle
 end
 
-function ExtractDadIdle(spriteSheet)
-    return ExtractCycle(spriteSheet, 17, 32, 5, 1, 13, 262)
+function Graphics:ExtractDadIdle(spriteSheet)
+    return self:ExtractCycle(spriteSheet, 17, 32, 5, 1, 13, 262)
 end
 
-function ExtractDadIdleFL(spriteSheet)
-    return ExtractCycle(spriteSheet, 24, 31, 5, 38, 6, 269)
+function Graphics:ExtractDadIdleFL(spriteSheet)
+    return self:ExtractCycle(spriteSheet, 24, 31, 5, 38, 6, 269)
 end
 
-function ExtractDadWalk(spriteSheet)
-    return ExtractCycle(spriteSheet, 22, 32, 2, 73, 8, 234)
+function Graphics:ExtractDadWalk(spriteSheet)
+    return self:ExtractCycle(spriteSheet, 22, 32, 2, 73, 8, 234)
 end
 
-function ExtractDadWalkFL(spriteSheet)
-    return ExtractCycle(spriteSheet, 26, 31, 3, 110, 4, 239)
+function Graphics:ExtractDadWalkFL(spriteSheet)
+    return self:ExtractCycle(spriteSheet, 26, 31, 3, 110, 4, 239)
 end

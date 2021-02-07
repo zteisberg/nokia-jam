@@ -1,10 +1,16 @@
 push = require 'lib/push'
 Class = require 'lib/class'
 
+require 'src/Input'
+
+require 'src/Graphics'
 require 'src/Animation'
-require 'src/Dad'
-require 'src/Entity'
+
 require 'src/LightSource'
+require 'src/Flashlight'
+
+require 'src/Entity'
+require 'src/Camera'
 require 'src/Objects'
 require 'src/Player'
-require 'src/Sprites'
+require 'src/Dad'

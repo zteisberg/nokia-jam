@@ -4,10 +4,9 @@ Objects = Class{__includes = Entity}
 function Objects:init(object, x, y)
     if object == "TV" then
         self.sprite = sprites["SideA_TV"]
-        x = x or 90
-        y = y or 140
+        self.pos = {x=x, y=y}
     end
-
+    self.direction = 1
     Entity.init(self, x, y)
 end
 

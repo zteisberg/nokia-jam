@@ -21,7 +21,11 @@ function Animation:render(x, y, sx, sy)
     sx = sx or 1
     sy = sy or 1
     love.graphics.draw(
-        self.source, self.cycle[math.floor(self.frame+1)],
+        self.source, self.cycle[self:getFrame()],
         x, y, 0, sx, sy, self.origin.x, self.origin.y
     )
+end
+
+function Animation:getFrame()
+    return math.floor(self.frame+1)
 end
