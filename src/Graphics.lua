@@ -3,15 +3,19 @@ Graphics = Class{}
 function Graphics:Load()
     textures = {
         ['FatherCycles1'] = love.graphics.newImage('assets/FatherCycles1.png'),
+        ['ButtonCycles'] = love.graphics.newImage('assets/UISheet.png'),
     }
     cycles = {
         ['DadIdle'] = self:ExtractDadIdle(textures['FatherCycles1']),
         ['DadWalk'] = self:ExtractDadWalk(textures['FatherCycles1']),
         ['DadIdleFL'] = self:ExtractDadIdleFL(textures['FatherCycles1']),
         ['DadWalkFL'] = self:ExtractDadWalkFL(textures['FatherCycles1']),
+        ['ButtonIndicator'] = self:ExtractButtonPress(textures['ButtonCycles']),
+        ['ArrowIndicator'] = self:ExtractArrowIndicator(textures['ButtonCycles']),
+        ['BatteryPower'] = self:ExtractBatteryPower(textures['ButtonCycles']),
     }
     sprites = {
-        ['SideA_TV'] = love.graphics.newImage('assets/sideA_TV.png')
+        ['SideA_TV'] = love.graphics.newImage('assets/sideA_TV.png'),
     }
 end
 
@@ -59,4 +63,16 @@ end
 
 function Graphics:ExtractDadWalkFL(spriteSheet)
     return self:ExtractCycle(spriteSheet, 26, 31, 3, 110, 4, 239)
+end
+
+function Graphics:ExtractButtonPress(spriteSheet)
+    return self:ExtractCycle(spriteSheet, 7, 5, 35, 2, 0, 55)
+end
+
+function Graphics:ExtractArrowIndicator(spriteSheet)
+    return self:ExtractCycle(spriteSheet, 8, 9, 0, 22, 1, 35)
+end
+
+function Graphics:ExtractBatteryPower(spriteSheet)
+    return self:ExtractCycle(spriteSheet, 8, 4, 0, 8, 0, 48)
 end

@@ -7,6 +7,7 @@ COLOR_LIGHT = {199/255, 240/255, 216/255}
 FPS_LIMIT = 15
 FPS_FRAME_DURATION = 1/FPS_LIMIT
 fpsTimer = 0
+currentFrameCycle = 0
 
 function love.load()
     love.window.setTitle('Nokia 3310')
@@ -29,6 +30,7 @@ function love.load()
     gameObjects['camera'] = Camera(70, 117, 12, 3, 3)
     gameObjects['dad'] = Dad(110, 161, true, false)
     gameObjects['tv'] = Objects('TV', 96, 155)
+    gameObjects['battery'] = Battery(1, 1, true, false)
 
     player = gameObjects['dad']
     camera = gameObjects['camera'].pos
@@ -42,6 +44,11 @@ function love.load()
     lightSources['tvLight']:setAngle(math.pi *6/8, math.pi /8)
     lightSources['tvLight']:setAnimation(50, 70)
     lightSources['tvLight'].visible = false
+    -- UI_elements
+    lightSources['flashlight'] = Flashlight(math.pi/3)
+    gameObjects['doorButton'] = Button(60, 125, true, true)
+    gameObjects['stairsArrow'] = Arrow(160, 125, true, true)
+  
     lightSources['flashlight'] = Flashlight(math.pi*2)
 
     
@@ -56,6 +63,7 @@ end
 
 function love.update(dt)
     fpsTimer = fpsTimer + dt
+    currentFrameCycle = (currentFrameCycle + 1) % FPS_LIMIT
     if fpsTimer > FPS_FRAME_DURATION then
         updateGame()
         fpsTimer = fpsTimer - FPS_FRAME_DURATION
@@ -67,6 +75,12 @@ function updateGame()
     input:update()
     for key, obj in pairs(gameObjects)    do obj  :update() end
     for key, light in pairs(lightSources) do light:update() end
+    if lightSources['flashlight'].visible then
+        gameObjects["battery"].charge = math.max(gameObjects["battery"].charge - 1, 0)
+        if gameObjects["battery"].charge <= 0 then
+            lightSources['flashlight'].visible = false
+        end
+    end
 
 end
 
@@ -78,6 +92,10 @@ function lights()
     else love.graphics.rectangle('fill',0,0,VIRTUAL_WIDTH,VIRTUAL_HEIGHT) end
 
     love.graphics.setShader(maskShader)
+    -- UI_elements
+    gameObjects['doorButton']:render()
+    gameObjects['stairsArrow']:render()
+    gameObjects['battery']:render()
     player:render()
     love.graphics.setShader()
 end

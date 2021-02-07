@@ -12,6 +12,7 @@ function Input:init()
         ['e'] = false,
         ['f5'] = false,
         ['f6'] = false,
+        ['space'] = false,
     }
     self.keysDown = {}
     for key in pairs(self.keysPressed) do
@@ -33,8 +34,8 @@ function Input:update()
         end
     end
     
-    if (self.keysDown['f5']) > 0 then
-        SoundSystem.playIfQuiet('win')
+    if (self.keysDown['space']) == 1 and gameObjects["battery"].charge > 0 then
+        lightSources['flashlight'].visible = not lightSources['flashlight'].visible
     end
 
     if (self.keysDown['q'] + self.keysDown['e']) % math.floor(FPS_LIMIT*.5) == 1 then
