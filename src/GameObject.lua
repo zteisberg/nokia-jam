@@ -21,15 +21,15 @@ function GameObject:render()
     local camera = gameObjects['camera']
     if self.animation then
         self.animation:render(
-            math.floor(self.pos.x + (self.relative and camera.pos.x or 0)),
-            math.floor(self.pos.y + (self.relative and camera.pos.y or 0)),
+            math.floor(self.pos.x - (self.relative and camera.pos.x or 0)),
+            math.floor(self.pos.y - (self.relative and camera.pos.y or 0)),
             self.direction
         )
     elseif self.sprite then
         love.graphics.draw(
             self.sprite, 
-            math.floor(self.pos.x + (self.relative and camera.pos.x or 0)), 
-            math.floor(self.pos.y + (self.relative and camera.pos.y or 0)),
+            math.floor(self.pos.x - (self.relative and camera.pos.x or 0)), 
+            math.floor(self.pos.y - (self.relative and camera.pos.y or 0)),
             0, self.direction
         )
     end

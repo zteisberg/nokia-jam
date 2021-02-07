@@ -6,6 +6,7 @@ require 'src/Input'
 require 'src/Graphics'
 require 'src/Animation'
 
+require 'src/Obstruction'
 require 'src/LightSource'
 require 'src/Flashlight'
 

@@ -8,8 +8,6 @@ FPS_LIMIT = 15
 FPS_FRAME_DURATION = 1/FPS_LIMIT
 fpsTimer = 0
 
-local toggleDebug = false
-local toggleLight = false
 function love.load()
     love.window.setTitle('Nokia 3310')
     love.graphics.setDefaultFilter('nearest','nearest')
@@ -27,19 +25,24 @@ function love.load()
     input = Input({'wasdqezxc123'})
 
     gameObjects = {}
-    gameObjects['camera'] = Camera(-70, -117, 12, 3, 3)
-    gameObjects['dad'] = Dad(40, 45, true, false)
-    gameObjects['player'] = gameObjects['dad']
+    gameObjects['camera'] = Camera(70, 117, 12, 3, 3)
+    gameObjects['dad'] = Dad(110, 161, true, false)
     gameObjects['tv'] = Objects('TV', 96, 155)
+
+    player = gameObjects['dad']
+    camera = gameObjects['camera'].pos
+    background = love.graphics.newImage('assets/sideA.png')
+
+    obstructions = {}
+    -- obstructions['bathroomDoorSideA'] = Obstruction(90,135,10,10)
 
     lightSources = {}
     lightSources['tvLight'] = LightSource(110, 172, 50, {.5,.6,.7,.8,.85,.9})
     lightSources['tvLight']:setAngle(math.pi *6/8, math.pi /8)
     lightSources['tvLight']:setAnimation(50, 70)
     lightSources['tvLight'].visible = false
-    lightSources['flashlight'] = Flashlight(math.pi/3)
+    lightSources['flashlight'] = Flashlight(math.pi*2)
 
-    background = love.graphics.newImage('assets/sideA.png')
     
     maskShader = love.graphics.newShader[[
     vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords) {
@@ -66,16 +69,28 @@ function updateGame()
 
 end
 
-function mask()
-    if not toggleLight then
+function lights()
+    if not input.toggleLight then
         for key, light in pairs(lightSources) do
             light:render()
         end
     else love.graphics.rectangle('fill',0,0,VIRTUAL_WIDTH,VIRTUAL_HEIGHT) end
 
     love.graphics.setShader(maskShader)
-    gameObjects['player']:render()
+    player:render()
     love.graphics.setShader()
+end
+
+function shadows()
+    if not input.toggleLight then
+        for i, light in pairs(lightSources) do
+            if light.visible then
+                for k, obstruction in pairs(obstructions) do
+                    light:shadows()
+                end
+            end
+        end
+    end
 end
 
 function love.draw()
@@ -87,15 +102,21 @@ function love.draw()
 
     -- Draw lights and use them as a mask
     love.graphics.setColor(COLOR_LIGHT)
-    love.graphics.stencil(mask, "replace", 1)
+    love.graphics.stencil(lights, "replace", 1)
     love.graphics.setStencilTest("greater", 0)
 
     -- Draw background, objects, and characters
     love.graphics.setColor(1,1,1)
-    love.graphics.draw(background, math.floor(gameObjects['camera'].pos.x), math.floor(gameObjects['camera'].pos.y))
-    for key, obj in pairs(gameObjects) do
-        obj:render()
-    end
+    love.graphics.draw(background, -math.floor(camera.x), -math.floor(camera.y))
+    for key, obj in pairs(gameObjects) do obj:render() end
+
+
+    -- Draw shadows next
+    love.graphics.setColor(COLOR_DARK)
+    for key, obs in pairs(obstructions) do obs:render() end
+    love.graphics.stencil(shadows, "replace", 1)
+    love.graphics.rectangle('fill',0,0,VIRTUAL_WIDTH,VIRTUAL_WIDTH)
+
     -- Clear mask
     love.graphics.setStencilTest()
 

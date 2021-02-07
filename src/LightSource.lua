@@ -1,7 +1,7 @@
 LightSource = Class{__includes = GameObject}
 
 function LightSource:init(x, y, radius, falloff)
-    GameObject.init(self, x, y)
+    GameObject.init(self, x or 0, y or 0)
     self.visible = true
     self.radius = radius             -- radius of light source
     self.falloff = falloff           -- measured in percent of radius
@@ -61,12 +61,18 @@ function LightSource:render()
         for i, point in pairs(self.frames[self.frame]) do
             if self.angle > math.pi or isInsideSector(point[1], point[2], self.angleVec1.x, self.angleVec1.y, self.angleVec2.x, self.angleVec2.y) then
                 translation[#translation+1] = {
-                    point[1] + self.pos.x + (self.relative and camera.x or 0),
-                    point[2] + self.pos.y + (self.relative and camera.y or 0),
+                    point[1] + self.pos.x - (self.relative and camera.x or 0),
+                    point[2] + self.pos.y - (self.relative and camera.y or 0),
                 }
             end
         end
         love.graphics.points(translation)
+    end
+end
+
+function LightSource:shadows()
+    for i, obstruction in pairs(obstructions) do
+        love.graphics.polygon('fill',obstruction:shadow(self.pos))
     end
 end
 
