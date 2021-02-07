@@ -7,6 +7,7 @@ COLOR_LIGHT = {199/255, 240/255, 216/255}
 FPS_LIMIT = 15
 FPS_FRAME_DURATION = 1/FPS_LIMIT
 fpsTimer = 0
+currentFrameCycle = 0
 
 local toggleDebug = false
 local toggleLight = false
@@ -32,6 +33,7 @@ function love.load()
     gameObjects['dad'] = Dad(40, 45, true, false)
     gameObjects['player'] = gameObjects['dad']
     gameObjects['tv'] = Objects('TV', 96, 155)
+    gameObjects['battery'] = Battery(1, 1, true, false)
 
     lightSources = {}
     lightSources['tvLight'] = LightSource(110, 172, 50, {.5,.6,.7,.8,.85,.9})
@@ -55,6 +57,7 @@ end
 
 function love.update(dt)
     fpsTimer = fpsTimer + dt
+    currentFrameCycle = (currentFrameCycle + 1) % FPS_LIMIT
     if fpsTimer > FPS_FRAME_DURATION then
         updateGame()
         fpsTimer = fpsTimer - FPS_FRAME_DURATION
@@ -66,6 +69,12 @@ function updateGame()
     input:update()
     for key, obj in pairs(gameObjects)    do obj  :update() end
     for key, light in pairs(lightSources) do light:update() end
+    if lightSources['flashlight'].visible then
+        gameObjects["battery"].charge = math.max(gameObjects["battery"].charge - 1, 0)
+        if gameObjects["battery"].charge <= 0 then
+            lightSources['flashlight'].visible = false
+        end
+    end
 
 end
 
@@ -80,6 +89,7 @@ function mask()
     gameObjects['player']:render()
     gameObjects['doorButton']:render()
     gameObjects['stairsArrow']:render()
+    gameObjects['battery']:render()
     love.graphics.setShader()
 end
 
