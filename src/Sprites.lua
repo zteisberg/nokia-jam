@@ -6,6 +6,7 @@ function Sprites:Load()
     }
     cycles = {
         ['DadIdle'] = ExtractDadIdle(textures['FatherCycles1']),
+        ['DadIdleFL'] = ExtractDadIdleFL(textures['FatherCycles1']),
         ['DadWalk'] = ExtractDadWalk(textures['FatherCycles1']),
         ['DadWalkFL'] = ExtractDadWalkFL(textures['FatherCycles1']),
     }
@@ -49,13 +50,13 @@ function ExtractDadIdle(spriteSheet)
 end
 
 function ExtractDadIdleFL(spriteSheet)
-    return ExtractCycle(spriteSheet, 24, 32, 5, 36, 6, 269)
+    return ExtractCycle(spriteSheet, 24, 31, 5, 38, 6, 269)
 end
 
 function ExtractDadWalk(spriteSheet)
-    return ExtractCycle(spriteSheet, 22, 32, 2, 71, 8, 234)
+    return ExtractCycle(spriteSheet, 22, 32, 2, 73, 8, 234)
 end
 
 function ExtractDadWalkFL(spriteSheet)
-    return ExtractCycle(spriteSheet, 24, 32, 5, 6, 269, 36)
+    return ExtractCycle(spriteSheet, 26, 31, 3, 110, 4, 239)
 end

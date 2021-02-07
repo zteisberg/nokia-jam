@@ -4,6 +4,7 @@ function Player:init(x,y,animations,active,globalPositioning)
     Entity.init(self,x,y,globalPositioning)
     self.animations = animations
     self.active = active or false
+    self.relative = false
 end
 
 function Player:update()
@@ -11,39 +12,38 @@ function Player:update()
 
     if love.keyboard.keysPressed['a'] == love.keyboard.keysPressed['d'] then
         Player.setIdle(self)
+        heightOffset = {1,1,1,1,1,1,0,0,0}
     else
+        local relativePos = self.x/VIRTUAL_WIDTH
+        Player.setWalk(self)
+        heightOffset = {0,0,1,0,0,0,1,1}
+
         if love.keyboard.keysPressed['a'] then
-            Player.setWalk(self)
+            local dx = math.floor(CAMERA_SPEED * (1-relativePos))
             self.direction = -1
-            if self.x < VIRTUAL_WIDTH-20 then
-                globalX = globalX - 1
-            else  self.x = self.x - 1 end
-        end
-        if love.keyboard.keysPressed['d'] then
-            Player.setWalk(self)
+            self.x = self.x + dx - 1
+            globalX = globalX + dx
+            flashlight:setRotation(math.pi * 7/8)
+        
+        elseif love.keyboard.keysPressed['d'] then
+            local dx = math.floor(CAMERA_SPEED * relativePos)
             self.direction = 1
-            if self.x > 20 then
-                globalX = globalX + 1
-            else  self.x = self.x + 1 end
+            self.x = self.x -dx + 1
+            globalX = globalX - dx
+            flashlight:setRotation(math.pi /-8)
         end
     end
 
-    if self.direction == 1 then
-        if self.x > 25 then
-            globalX = globalX + 1
-            self.x = self.x - 1
-        end
-    elseif self.x < VIRTUAL_WIDTH-25 then
-        globalX = globalX - 1
-        self.x = self.x + 1
-    end
-
+    flashlight.x = self.x + 10 * self.direction
+    flashlight.y = self.y - 8 - heightOffset[math.floor(self.animation.frame+1)]
+    headlight.x = self.x + 3 * self.direction
+    headlight.y = self.y - 21 - heightOffset[math.floor(self.animation.frame+1)]
 end
 
 function Player:setIdle()
-    Entity.setAnimation(self, self.animations['idle'])
+    Entity.setAnimation(self, self.animations['idleFL'])
 end
 
 function Player:setWalk()
-    Entity.setAnimation(self, self.animations['walk'])
+    Entity.setAnimation(self, self.animations['walkFL'])
 end
