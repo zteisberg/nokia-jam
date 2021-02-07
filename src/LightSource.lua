@@ -1,7 +1,7 @@
 LightSource = Class{}
 
 function LightSource:init(x, y, radius, falloff, angle, rotation)
-    self.x, self.y = x, y
+    self.pos = {x=x, y=y}
     self.relative = true
     self.radius = radius                -- radius of light source
     self.falloff = falloff              -- measured in percent of radius
@@ -62,18 +62,17 @@ function LightSource:render()
     for i, point in pairs(self.frames[self.frame]) do
         if self.angle > math.pi or isInsideSector(point[1], point[2], self.angleVec1.x, self.angleVec1.y, self.angleVec2.x, self.angleVec2.y) then
             translation[#translation+1] = {
-                point[1] + self.x + (self.relative and globalX or 0),
-                point[2] + self.y + (self.relative and globalY or 0),
+                point[1] + self.pos.x + (self.relative and camera.x or 0),
+                point[2] + self.pos.y + (self.relative and camera.y or 0),
             }
         end
     end
-    love.graphics.setColor(COLOR_LIGHT)
     love.graphics.points(translation)
 end
 
 function LightSource:setTransform(x, y, angle, rotation)
-    self.x = x
-    self.y = y
+    self.pos.x = x
+    self.pos.y = y
     self.angle = angle
     self.rotation = rotation
 end
@@ -87,6 +86,18 @@ end
 function LightSource:setRotation(rotation)
     self.rotation = rotation
     self.calcVectors(self)
+end
+
+function LightSource:setRadius(radius)
+    self.radius = radius
+    self.frames = {self.calcPoints(self)}
+end
+
+function LightSource:changeRadius(dr)
+    self.radius = self.radius + dr
+    if self.radius ~= math.floor( self.radius + 0.5) then
+        self.frames = {self.calcPoints(self)}
+    end
 end
 
 function LightSource:setAnimation(startSize,endSize,step)
@@ -169,8 +180,8 @@ function LightSource:calcPoints()
                 end
             end
             points[#points+1] = {
-                x,-- + self.x - (self.relative and globalX or 0),
-                y,-- + self.y - (self.relative and globalY or 0),
+                x,-- + self.pos.x - (self.relative and camera.x or 0),
+                y,-- + self.pos.y - (self.relative and camera.y or 0),
             }
             ::continue::
         end

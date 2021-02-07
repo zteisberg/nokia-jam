@@ -10,14 +10,6 @@ function Dad:init(x,y,active,globalPositioning)
     Player.init(self,x,y,animations,active,globalPositioning)
 end
 
-function Dad:move(x, y)
-    Entity.move(self, x,y)
-end
-
-function Dad:setPosition(x, y)
-    Entity.setPosition(self,x,y)
-end
-
 function Dad:update()
     Player.update(self)
 end

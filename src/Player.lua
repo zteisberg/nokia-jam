@@ -5,6 +5,8 @@ function Player:init(x,y,animations,active,globalPositioning)
     self.animations = animations
     self.active = active or false
     self.relative = false
+    self.angle = 0
+    self.angleToggle = true
 end
 
 function Player:update()
@@ -12,38 +14,51 @@ function Player:update()
 
     if love.keyboard.keysPressed['a'] == love.keyboard.keysPressed['d'] then
         Player.setIdle(self)
-        heightOffset = {1,1,1,1,1,1,0,0,0}
+        self.heightOffset = {1,1,1,1,1,1,0,0,0}
     else
-        local relativePos = self.x/VIRTUAL_WIDTH
+        local relativePos = self.pos.x/VIRTUAL_WIDTH
         Player.setWalk(self)
-        heightOffset = {0,0,1,0,0,0,1,1}
+        self.heightOffset = {0,0,1,0,0,0,1,1}
 
         if love.keyboard.keysPressed['a'] then
             local dx = math.floor(CAMERA_SPEED * (1-relativePos))
             self.direction = -1
-            self.x = self.x + dx - 1
-            globalX = globalX + dx
-            flashlight:setRotation(math.pi * 7/8)
+            self.pos.x = self.pos.x + dx - 1
+            camera.x = camera.x + dx
+            flashlight:setRotation(math.pi * 7/8 - self.angle)
         
         elseif love.keyboard.keysPressed['d'] then
             local dx = math.floor(CAMERA_SPEED * relativePos)
             self.direction = 1
-            self.x = self.x -dx + 1
-            globalX = globalX - dx
-            flashlight:setRotation(math.pi /-8)
+            self.pos.x = self.pos.x -dx + 1
+            camera.x = camera.x - dx
+            flashlight:setRotation(math.pi /-8 + self.angle)
         end
     end
 
-    flashlight.x = self.x + 10 * self.direction
-    flashlight.y = self.y - 8 - heightOffset[math.floor(self.animation.frame+1)]
-    headlight.x = self.x + 3 * self.direction
-    headlight.y = self.y - 21 - heightOffset[math.floor(self.animation.frame+1)]
+    if love.keyboard.keysPressed['q'] == love.keyboard.keysPressed['e'] then
+        self.angleToggle = true
+    else
+        if love.keyboard.keysPressed['q'] and self.angleToggle then
+            self.angle = math.max(math.min(self.angle + math.pi/4 * self.direction, math.pi/2), 0)
+            self.angleToggle = false
+        elseif love.keyboard.keysPressed['e'] and self.angleToggle  then
+            self.angle = math.max(math.min(self.angle + math.pi/4 * -self.direction, math.pi/2), 0)
+            self.angleToggle = false
+        end
+    end
+
+    
+
+    flashlight.pos.x = self.pos.x + 10 * self.direction
+    flashlight.pos.y = self.pos.y - 8 - self.heightOffset[math.floor(self.animation.frame+1)]
+    flashlight:setRotation(math.pi*(3/8 - self.direction/2) + self.angle*self.direction) 
 end
 
 function Player:setIdle()
-    Entity.setAnimation(self, self.animations['idleFL'])
+    self.animation = self.animations['idleFL']
 end
 
 function Player:setWalk()
-    Entity.setAnimation(self, self.animations['walkFL'])
+    self.animation = self.animations['walkFL']
 end
