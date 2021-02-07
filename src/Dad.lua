@@ -15,7 +15,7 @@ function Dad:update()
 end
 
 function Dad:render()
-    Entity.render(self)
+    GameObject.render(self)
 end
 
 function Dad:setIdle()

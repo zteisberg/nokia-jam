@@ -1,23 +1,23 @@
-Entity = Class{}
+GameObject = Class{}
 
-function Entity:init(x, y)
+function GameObject:init(x, y)
     self.relative = true
     self.direction = 1
     self.pos = {x=x, y=y}
 end
 
-function Entity:move(x, y)
+function GameObject:move(x, y)
     self.pos.x = self.pos.x + x
     self.pos.y = self.pos.y + y
 end
 
-function Entity:update()
+function GameObject:update()
     if self.animation then
         self.animation:update()
     end
 end
 
-function Entity:render()
+function GameObject:render()
     local camera = gameObjects['camera']
     if self.animation then
         self.animation:render(
@@ -35,7 +35,7 @@ function Entity:render()
     end
 end
 
-function Entity:setRelative(relative)
+function GameObject:setRelative(relative)
     if relative and not self.relative then
         
     end

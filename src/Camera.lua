@@ -1,7 +1,7 @@
-Camera = Class{__includes = Entity}
+Camera = Class{__includes = GameObject}
 
 function Camera:init(x,y,speed, xMargin, yMargin)
-    Entity.init(self, x, y)
+    GameObject.init(self, x, y)
     self.speed = speed
     self.margin = {x=xMargin, y=yMargin}
     self.center = false

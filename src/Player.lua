@@ -1,8 +1,8 @@
-Player = Class{__includes = Entity}
+Player = Class{__includes = GameObject}
 
 
 function Player:init(x,y,animations,active,globalPositioning)
-    Entity.init(self,x,y,globalPositioning)
+    GameObject.init(self,x,y,globalPositioning)
     self.animations = animations
     self.active = active or false
     self.relative = false
@@ -13,7 +13,7 @@ function Player:init(x,y,animations,active,globalPositioning)
 end
 
 function Player:update()
-    Entity.update(self)
+    GameObject.update(self)
 end
 
 function Player:setIdle()

@@ -1,7 +1,7 @@
-LightSource = Class{__includes = Entity}
+LightSource = Class{__includes = GameObject}
 
 function LightSource:init(x, y, radius, falloff)
-    Entity.init(self, x, y)
+    GameObject.init(self, x, y)
     self.visible = true
     self.radius = radius             -- radius of light source
     self.falloff = falloff           -- measured in percent of radius

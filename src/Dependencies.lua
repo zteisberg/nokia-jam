@@ -9,7 +9,7 @@ require 'src/Animation'
 require 'src/LightSource'
 require 'src/Flashlight'
 
-require 'src/Entity'
+require 'src/GameObject'
 require 'src/Camera'
 require 'src/Objects'
 require 'src/Player'

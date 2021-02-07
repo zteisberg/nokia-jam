@@ -1,4 +1,4 @@
-Objects = Class{__includes = Entity}
+Objects = Class{__includes = GameObject}
 
 
 function Objects:init(object, x, y)
@@ -7,13 +7,13 @@ function Objects:init(object, x, y)
         self.pos = {x=x, y=y}
     end
     self.direction = 1
-    Entity.init(self, x, y)
+    GameObject.init(self, x, y)
 end
 
 function Objects:update()
-    Entity.update(self)
+    GameObject.update(self)
 end
 
 function Objects:render()
-    Entity.render(self)
+    GameObject.render(self)
 end
