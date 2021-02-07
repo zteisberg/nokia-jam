@@ -1,6 +1,8 @@
 Input = Class{}
 
 function Input:init()
+    self.toggleLight = false
+    self.toggleDebug = false
     self.keysPressed = {
         ['a'] = false,
         ['s'] = false,
@@ -19,7 +21,6 @@ function Input:init()
 end
 
 function Input:update()
-    local player = gameObjects['player']
     local camera = gameObjects['camera']
 
     if self.keysDown['a'] > 0 and 0 < self.keysDown['d'] or
@@ -48,9 +49,11 @@ function Input:update()
                 player.direction = player.direction *-1
                 camera.center = true
             end
-        else player.angle = angle end
-            
+        else player.angle = angle end     
     end
+
+    if self.keysPressed['f5'] then self.toggleLight = not self.toggleLight end
+    if self.keysPressed['f6'] then self.toggleDebug = not self.toggleDebug end
 
     for key in pairs(self.keysPressed) do self.keysPressed[key] = false end
     for key in pairs(self.keysDown) do
