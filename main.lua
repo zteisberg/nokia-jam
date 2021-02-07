@@ -24,6 +24,7 @@ function love.load()
     )
 
     Graphics:Load()
+    SoundSystem:Load()
     input = Input({'wasdqezxc123'})
 
     gameObjects = {}

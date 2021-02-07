@@ -4,6 +4,7 @@ Class = require 'lib/class'
 require 'src/Input'
 
 require 'src/Graphics'
+require 'src/SoundSystem'
 require 'src/Animation'
 
 require 'src/LightSource'

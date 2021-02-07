@@ -32,7 +32,12 @@ function Input:update()
         end
     end
     
+    if (self.keysDown['f5']) > 0 then
+        SoundSystem.playIfQuiet('win')
+    end
+
     if (self.keysDown['q'] + self.keysDown['e']) % math.floor(FPS_LIMIT*.5) == 1 then
+        SoundSystem.play("interact")
         local turnDirection =  -1
         if self.keysDown['q'] > self.keysDown['e'] then turnDirection = 1 end
         
