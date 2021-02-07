@@ -24,6 +24,7 @@ function Dad:setIdle()
 end
 
 function Dad:setWalk()
+    SoundSystem.playIfQuiet('steps')
     Player.setWalk(self)
     self.heightOffset = {0,0,1,0,0,0,1,1}
 end
