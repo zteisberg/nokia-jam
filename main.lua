@@ -39,6 +39,8 @@ function love.load()
     lightSources['tvLight']:setAnimation(50, 70)
     lightSources['tvLight'].visible = false
     lightSources['flashlight'] = Flashlight(math.pi/3)
+    gameObjects['doorButton'] = Button(60, 125, true, true)
+    gameObjects['stairsArrow'] = Arrow(160, 125, true, true)
 
     background = love.graphics.newImage('assets/sideA.png')
     
@@ -76,6 +78,8 @@ function mask()
 
     love.graphics.setShader(maskShader)
     gameObjects['player']:render()
+    gameObjects['doorButton']:render()
+    gameObjects['stairsArrow']:render()
     love.graphics.setShader()
 end
 
