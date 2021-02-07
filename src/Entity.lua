@@ -20,16 +20,24 @@ end
 function Entity:render()
     if self.animation then
         self.animation:render(
-            self.pos.x + (self.relative and camera.x or 0),
-            self.pos.y + (self.relative and camera.y or 0),
+            math.floor(self.pos.x + (self.relative and camera.x or 0)),
+            math.floor(self.pos.y + (self.relative and camera.y or 0)),
             self.direction
         )
     elseif self.sprite then
         love.graphics.draw(
             self.sprite, 
-            self.pos.x + (self.relative and camera.x or 0), 
-            self.pos.y + (self.relative and camera.y or 0),
+            math.floor(self.pos.x + (self.relative and camera.x or 0)), 
+            math.floor(self.pos.y + (self.relative and camera.y or 0)),
             self.direction
         )
     end
+end
+
+function Entity:setRelative(relative)
+    if relative and not self.relative then
+        
+    end
+
+    self.relative = relative
 end

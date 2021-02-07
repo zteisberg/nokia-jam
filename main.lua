@@ -11,7 +11,8 @@ FPS_FRAME_DURATION = 1/FPS_LIMIT
 fpsTimer = 0
 
 CAMERA_SPEED = 12
-camera = {x=-70, y=-117}  -- Used to position all "globally positioned" objects relative to camera
+CAMERA_MARGIN = {x=3, y=3}         --
+camera = {x=-70, y=-117}  -- Used to position all "relatively positioned" with respect to camera
 local gx,gy = 0,0
 
 
@@ -23,9 +24,9 @@ local toggleLight = false
 background = love.graphics.newImage('assets/sideA.png')
 tvLight = LightSource(110, 172, 50, {.5,.6,.7,.8,.85,.9}, math.pi *6/8, math.pi /8)
 tvLight:setAnimation(50,70,1)
-flashlight = LightSource(0,0,60, {.5,.6,.7,.8,.85,.9}, math.pi /4, math.pi /-8)
+flashlight = LightSource(0,0,80, {.4,.475,.55,.625,.7,.775}, math.pi /4, math.pi /-8)
 flashlight.relative = false
-tv = Objects('TV',96,155, true)
+tv = Objects('TV',112,150)
 dad = Dad(40, 45, true, false)
 
 maskShader = love.graphics.newShader[[
@@ -51,7 +52,11 @@ function love.load()
     )
     love.keyboard.keysPressed = {
         ['a'] = false,
+        ['s'] = false,
         ['d'] = false,
+        ['w'] = false,
+        ['q'] = false,
+        ['e'] = false,
     }
 end
 
@@ -91,7 +96,7 @@ function love.draw()
 
     -- Draw background, objects, and characters
     love.graphics.setColor(1,1,1)
-    love.graphics.draw(background, camera.x, camera.y)
+    love.graphics.draw(background, math.floor(camera.x), math.floor(camera.y))
     dad:render()
     tv:render()
 
