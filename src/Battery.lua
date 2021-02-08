@@ -10,6 +10,7 @@ end
 
 function Battery:update()
     GameObject.update(self)
+    self.charge = 15 * 30
 end
 
 function Battery:render()

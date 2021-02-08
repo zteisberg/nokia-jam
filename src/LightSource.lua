@@ -70,11 +70,11 @@ function LightSource:render()
     end
 end
 
-function LightSource:shadows()
-    for i, obstruction in pairs(obstructions) do
-        love.graphics.polygon('fill',obstruction:shadow(self.pos))
-    end
-end
+-- function LightSource:shadows()
+--     for i, obstruction in pairs(obstructions) do
+--         love.graphics.polygon('fill',obstruction:shadow(self.pos))
+--     end
+-- end
 
 function LightSource:setTransform(x, y, angle, rotation)
     self.pos.x = x

@@ -9,19 +9,28 @@ function Player:init(x,y,animations,active,globalPositioning)
     self.angleToggle = true
     self.heightOffset = {1,1,1,1,1,1,0,0,0}
     self.direction = 1
+    self.state = 'idle'
     self:setIdle()
 end
 
 function Player:update()
     GameObject.update(self)
+    if self.state == 'walking' then
+        self.pos.x = self.pos.x + self.direction
+    end
 end
 
 function Player:setIdle()
     self.animation = self.animations['idleFL']
-    self.walking = false
+    self.state = 'idle'
 end
 
 function Player:setWalk()
     self.animation = self.animations['walkFL']
-    self.walking = true
+    self.state = 'walking'
+end
+
+function Player:setStairsUp()
+    self.animation = self.animations['stairsUp']
+    self.state = 'stairs'
 end

@@ -14,23 +14,25 @@ function Input:init()
         ['f6'] = false,
         ['space'] = false,
     }
+    self.keysTimer = {}
     self.keysDown = {}
     for key in pairs(self.keysPressed) do
-        self.keysDown[key] = 0
+        self.keysDown[key] = false
+        self.keysTimer[key] = 0
     end
 end
 
 function Input:update()
     local camera = gameObjects['camera']
 
-    if self.keysDown['a'] > 0 and 0 < self.keysDown['d'] or
+    if self.keysDown['a'] and self.keysDown['d'] or
         self.keysDown['a'] == self.keysDown['d'] then
         player:setIdle()
         
     else
         player:setWalk()
-        if     self.keysDown['a'] > 0 then player.direction = -1
-        elseif self.keysDown['d'] > 0 then player.direction = 1
+        if     self.keysDown['a'] then player.direction = -1
+        elseif self.keysDown['d'] then player.direction = 1
         end
     end
     
@@ -38,14 +40,14 @@ function Input:update()
         lightSources['flashlight'].visible = not lightSources['flashlight'].visible
     end
 
-    if (self.keysDown['q'] + self.keysDown['e']) % math.floor(FPS_LIMIT*.5) == 1 then
+    if (self.keysTimer['q'] + self.keysTimer['e']) % math.floor(FPS_LIMIT*.5) == 1 then
         SoundSystem.play("interact")
         local turnDirection =  -1
-        if self.keysDown['q'] > self.keysDown['e'] then turnDirection = 1 end
+        if self.keysTimer['q'] > self.keysTimer['e'] then turnDirection = 1 end
         
         local angle = player.angle + math.pi/4 * player.direction * turnDirection
         if math.abs(angle) > math.pi/2 then
-            if not player.walking then
+            if player.state == 'idle' then
                 player.direction = player.direction *-1
                 camera.center = true
             end
@@ -56,18 +58,20 @@ function Input:update()
     if self.keysPressed['f6'] then self.toggleDebug = not self.toggleDebug end
 
     for key in pairs(self.keysPressed) do self.keysPressed[key] = false end
-    for key in pairs(self.keysDown) do
-        if self.keysDown[key] > 0 then 
-            self.keysDown[key] = self.keysDown[key] + 1
+    for key in pairs(self.keysTimer) do
+        if self.keysTimer[key] > 0 then 
+            self.keysTimer[key] = self.keysTimer[key] + 1
+            self.keysDown[key] = true
+        else self.keysDown[key] = false
         end
     end
 end
 
 function love.keypressed(key)
     input.keysPressed[key] = true
-    input.keysDown[key] = 1
+    input.keysTimer[key] = 1
 end
 
 function love.keyreleased(key)
-    input.keysDown[key] = 0
+    input.keysTimer[key] = 0
 end

@@ -1,15 +1,16 @@
 require 'src/Dependencies'
 
-VIRTUAL_WIDTH, VIRTUAL_HEIGHT = 84, 48
-WINDOW_WIDTH, WINDOW_HEIGHT = 630, 360
-COLOR_DARK  = { 67/255,  82/255,  61/255}
-COLOR_LIGHT = {199/255, 240/255, 216/255}
-FPS_LIMIT = 15
-FPS_FRAME_DURATION = 1/FPS_LIMIT
-fpsTimer = 0
-currentFrameCycle = 0
-
 function love.load()
+
+    VIRTUAL_WIDTH, VIRTUAL_HEIGHT = 84, 48
+    WINDOW_WIDTH, WINDOW_HEIGHT = 630, 360
+    COLOR_DARK  = { 67/255,  82/255,  61/255}
+    COLOR_LIGHT = {199/255, 240/255, 216/255}
+    FPS_LIMIT = 15
+    FPS_FRAME_DURATION = 1/FPS_LIMIT
+    fpsTimer = 0
+    currentFrameCycle = 0
+
     love.window.setTitle('Nokia 3310')
     love.graphics.setDefaultFilter('nearest','nearest')
     push:setupScreen(
@@ -48,8 +49,6 @@ function love.load()
     lightSources['flashlight'] = Flashlight(math.pi/3)
     gameObjects['doorButton'] = Button(60, 125, true, true)
     gameObjects['stairsArrow'] = Arrow(160, 125, true, true)
-  
-    lightSources['flashlight'] = Flashlight(math.pi*2)
 
     
     maskShader = love.graphics.newShader[[
@@ -100,17 +99,17 @@ function lights()
     love.graphics.setShader()
 end
 
-function shadows()
-    if not input.toggleLight then
-        for i, light in pairs(lightSources) do
-            if light.visible then
-                for k, obstruction in pairs(obstructions) do
-                    light:shadows()
-                end
-            end
-        end
-    end
-end
+-- function shadows()
+--     if not input.toggleLight then
+--         for i, light in pairs(lightSources) do
+--             if light.visible then
+--                 for k, obstruction in pairs(obstructions) do
+--                     light:shadows()
+--                 end
+--             end
+--         end
+--     end
+-- end
 
 function love.draw()
     push:start()
@@ -133,8 +132,8 @@ function love.draw()
     -- Draw shadows next
     love.graphics.setColor(COLOR_DARK)
     for key, obs in pairs(obstructions) do obs:render() end
-    love.graphics.stencil(shadows, "replace", 1)
-    love.graphics.rectangle('fill',0,0,VIRTUAL_WIDTH,VIRTUAL_WIDTH)
+    -- love.graphics.stencil(shadows, "replace", 1)
+    -- love.graphics.rectangle('fill',0,0,VIRTUAL_WIDTH,VIRTUAL_WIDTH)
 
     -- Clear mask
     love.graphics.setStencilTest()
