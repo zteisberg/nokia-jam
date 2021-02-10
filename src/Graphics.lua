@@ -13,6 +13,9 @@ function Graphics:Load()
         ['DadIdleFL'] = self:ExtractDadIdleFL(textures['FatherCycles1']),
         ['DadWalkFL'] = self:ExtractDadWalkFL(textures['FatherCycles1']),
         ['DadStairsUp'] = self:ExtractDadStairsUp(textures['FatherCycles3']),
+        ['DadStairsDown'] = self:ExtractDadStairsDown(textures['FatherCycles3']),
+        ['DadStairsUpFL'] = self:ExtractDadStairsUpFL(textures['FatherCycles3']),
+        ['DadStairsDownFL'] = self:ExtractDadStairsDownFL(textures['FatherCycles3']),
         ['ButtonIndicator'] = self:ExtractButtonPress(textures['ButtonCycles']),
         ['ArrowIndicator'] = self:ExtractArrowIndicator(textures['ButtonCycles']),
         ['BatteryPower'] = self:ExtractBatteryPower(textures['ButtonCycles']),
@@ -74,6 +77,14 @@ end
 
 function Graphics:ExtractDadStairsDown(spriteSheet)
     return self:ExtractCycle(spriteSheet, 53, 73, 85, 74, 0, 1092)
+end
+
+function Graphics:ExtractDadStairsUpFL(spriteSheet)
+    return self:ExtractCycle(spriteSheet, 62, 73, 0, 148, 0, 1178)
+end
+
+function Graphics:ExtractDadStairsDownFL(spriteSheet)
+    return self:ExtractCycle(spriteSheet, 62, 73, 0, 222, 0, 1178)
 end
 
 function Graphics:ExtractButtonPress(spriteSheet)

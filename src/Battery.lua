@@ -15,9 +15,6 @@ end
 
 function Battery:render()
     battery_charge = 6 - math.ceil(self.charge / (6*15))
-    if self.charge <= 15 and self.charge > 0 then
-        lightSources['flashlight'].visible = currentFrameCycle % 3 == 0
-    end
     love.graphics.draw(
         self.source, self.cycle[battery_charge],
         self.pos.x, self.pos.y, 0, 1, 1, 0, 0

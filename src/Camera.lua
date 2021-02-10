@@ -14,14 +14,20 @@ function Camera:update()
         y = ((player.pos.y - self.pos.y - self.margin.y) / (VIRTUAL_HEIGHT - self.margin.y * 2) - 1) * 2
     }
 
+    if player.state == 'stairs' then
+        relativePos.y = relativePos.y - player:getHeightOffset()/VIRTUAL_HEIGHT
+    end
+
     local d = {
         x = self.speed * (relativePos.x + (player.direction - 1) * .5),
         y = self.speed * (relativePos.y - player.angle / math.pi * 2)
     }
 
-    if player.walking then
+    if player.state == 'walking' then
         self.pos.x = math.floor(self.pos.x + d.x + 0.5)
-        player.pos.x = player.pos.x + player.direction
+    
+    elseif player.state == 'stairs' then
+        self.pos.x = math.floor(self.pos.x + d.x + 0.5)
 
     elseif self.center then
         self.pos.x = math.floor(self.pos.x + d.x/2 + 0.5)

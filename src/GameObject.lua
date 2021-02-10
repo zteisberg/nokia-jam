@@ -18,7 +18,6 @@ function GameObject:update()
 end
 
 function GameObject:render()
-    local camera = gameObjects['camera']
     if self.animation then
         self.animation:render(
             math.floor(self.pos.x - (self.relative and camera.pos.x or 0)),

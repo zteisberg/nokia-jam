@@ -61,8 +61,8 @@ function LightSource:render()
         for i, point in pairs(self.frames[self.frame]) do
             if self.angle > math.pi or isInsideSector(point[1], point[2], self.angleVec1.x, self.angleVec1.y, self.angleVec2.x, self.angleVec2.y) then
                 translation[#translation+1] = {
-                    point[1] + self.pos.x - (self.relative and camera.x or 0),
-                    point[2] + self.pos.y - (self.relative and camera.y or 0),
+                    point[1] + self.pos.x - (self.relative and camera.pos.x or 0),
+                    point[2] + self.pos.y - (self.relative and camera.pos.y or 0),
                 }
             end
         end
@@ -70,11 +70,9 @@ function LightSource:render()
     end
 end
 
--- function LightSource:shadows()
---     for i, obstruction in pairs(obstructions) do
---         love.graphics.polygon('fill',obstruction:shadow(self.pos))
---     end
--- end
+function LightSource:shadows(osbstruction)
+    love.graphics.polygon('fill',osbstruction:shadow(self.pos))
+end
 
 function LightSource:setTransform(x, y, angle, rotation)
     self.pos.x = x
@@ -186,8 +184,8 @@ function LightSource:calcPoints()
                 end
             end
             points[#points+1] = {
-                x,-- + self.pos.x - (self.relative and camera.x or 0),
-                y,-- + self.pos.y - (self.relative and camera.y or 0),
+                x,-- + self.pos.x - (self.relative and camera.pos.x or 0),
+                y,-- + self.pos.y - (self.relative and camera.pos.y or 0),
             }
             ::continue::
         end

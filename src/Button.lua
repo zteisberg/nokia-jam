@@ -11,7 +11,7 @@ function Button:update()
 end
 
 function Button:render()
-    local absolute_position = gameObjects['camera'].pos.x - gameObjects['dad'].pos.x
+    local absolute_position = camera.pos.x - player.pos.x
     if absolute_position >= -88 and absolute_position <= -35  then
         GameObject.render(self)
     end

@@ -25,39 +25,10 @@ function love.load()
 
     Graphics:Load()
     SoundSystem:Load()
-    input = Input({'wasdqezxc123'})
-
-    gameObjects = {}
-    gameObjects['camera'] = Camera(70, 117, 12, 3, 3)
-    gameObjects['dad'] = Dad(110, 161, true, false)
-    gameObjects['tv'] = Objects('TV', 96, 155)
-    gameObjects['battery'] = Battery(1, 1, true, false)
-
-    player = gameObjects['dad']
-    camera = gameObjects['camera'].pos
-    background = love.graphics.newImage('assets/sideA.png')
-
-    obstructions = {}
-    -- obstructions['bathroomDoorSideA'] = Obstruction(90,135,10,10)
-
-    lightSources = {}
-    lightSources['tvLight'] = LightSource(110, 172, 50, {.5,.6,.7,.8,.85,.9})
-    lightSources['tvLight']:setAngle(math.pi *6/8, math.pi /8)
-    lightSources['tvLight']:setAnimation(50, 70)
-    lightSources['tvLight'].visible = false
-    -- UI_elements
-    lightSources['flashlight'] = Flashlight(math.pi/3)
-    gameObjects['doorButton'] = Button(60, 125, true, true)
-    gameObjects['stairsArrow'] = Arrow(160, 125, true, true)
-
-    
-    maskShader = love.graphics.newShader[[
-    vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords) {
-        if (Texel(texture, texture_coords).a == 0) {
-            discard;
-        }
-        return vec4(0.0);
-    }]]
+    input = Input()
+    state = StateHandler()
+    state:addState('play', function() return PlayState() end, true)
+    state:setState('play')
 end
 
 function love.update(dt)
@@ -67,78 +38,27 @@ function love.update(dt)
         updateGame()
         fpsTimer = fpsTimer - FPS_FRAME_DURATION
     end
-    
 end
 
 function updateGame()
+    state:update()
     input:update()
-    for key, obj in pairs(gameObjects)    do obj  :update() end
-    for key, light in pairs(lightSources) do light:update() end
-    if lightSources['flashlight'].visible then
-        gameObjects["battery"].charge = math.max(gameObjects["battery"].charge - 1, 0)
-        if gameObjects["battery"].charge <= 0 then
-            lightSources['flashlight'].visible = false
+end
+function shadows()
+    if not input.toggleLight then
+        for i, light in pairs(lightSources) do
+            if light.visible then
+                for k, obstruction in pairs(obstructions) do
+                    light:shadows()
+                end
+            end
         end
     end
-
 end
-
-function lights()
-    if not input.toggleLight then
-        for key, light in pairs(lightSources) do
-            light:render()
-        end
-    else love.graphics.rectangle('fill',0,0,VIRTUAL_WIDTH,VIRTUAL_HEIGHT) end
-
-    love.graphics.setShader(maskShader)
-    -- UI_elements
-    gameObjects['doorButton']:render()
-    gameObjects['stairsArrow']:render()
-    gameObjects['battery']:render()
-    player:render()
-    love.graphics.setShader()
-end
-
--- function shadows()
---     if not input.toggleLight then
---         for i, light in pairs(lightSources) do
---             if light.visible then
---                 for k, obstruction in pairs(obstructions) do
---                     light:shadows()
---                 end
---             end
---         end
---     end
--- end
 
 function love.draw()
     push:start()
-
-    -- Draw darkness first
-    love.graphics.setColor(COLOR_DARK)
-    love.graphics.rectangle('fill',0,0,VIRTUAL_WIDTH,VIRTUAL_WIDTH)
-
-    -- Draw lights and use them as a mask
-    love.graphics.setColor(COLOR_LIGHT)
-    love.graphics.stencil(lights, "replace", 1)
-    love.graphics.setStencilTest("greater", 0)
-
-    -- Draw background, objects, and characters
-    love.graphics.setColor(1,1,1)
-    love.graphics.draw(background, -math.floor(camera.x), -math.floor(camera.y))
-    for key, obj in pairs(gameObjects) do obj:render() end
-
-
-    -- Draw shadows next
-    love.graphics.setColor(COLOR_DARK)
-    for key, obs in pairs(obstructions) do obs:render() end
-    -- love.graphics.stencil(shadows, "replace", 1)
-    -- love.graphics.rectangle('fill',0,0,VIRTUAL_WIDTH,VIRTUAL_WIDTH)
-
-    -- Clear mask
-    love.graphics.setStencilTest()
-
-
+    state:render()
     push:finish()
 end
 
