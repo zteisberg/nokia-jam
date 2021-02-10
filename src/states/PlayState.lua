@@ -112,6 +112,7 @@ function PlayState:handleInput()
             if input.keysDown['a'] then moveDirection = -1 end
             if input.keysDown['d'] then moveDirection = 1 end
             if player.direction ~= moveDirection then
+                 camera.pos.x = camera.pos.x + moveDirection * 2
                  player.animation.reverse = true
             else player.animation.reverse = false end
             player.pos.x = player.pos.x + moveDirection
@@ -140,11 +141,6 @@ function PlayState:handleInput()
 
         SoundSystem.play("interact") 
     end
-
-    for key in pairs(input.keysDown) do
-        print(key,input.keysPressed[key],input.keysDown[key],input.keysDownDuration[key])
-    end
-    print('')
 
     if input.keysPressed['w'] then player:setStairsUp() end
     if input.keysPressed['f5'] then toggleLight = not toggleLight end
