@@ -80,19 +80,11 @@ function PlayState:render()
     love.graphics.draw(background, -math.floor(camera.pos.x), -math.floor(camera.pos.y))
     for i in pairs(gameObjects) do gameObjects[i]:render() end
 
-
-    -- Draw shadows next
-    love.graphics.setColor(COLOR_DARK)
-    for key, obs in pairs(obstructions) do obs:render() end
-    love.graphics.stencil(self.shadows, "replace", 1)
-    love.graphics.rectangle('fill',0,0,VIRTUAL_WIDTH,VIRTUAL_WIDTH)
-
     -- Clear mask and draw UI
     love.graphics.setColor(1,1,1)
     love.graphics.setStencilTest()
     for i in pairs(ui) do ui[i]:render() end
-
-    tester:calculate(lightSources['flashlight'].pos)
+    
 end
 function PlayState:lights()
     love.graphics.setShader(shadowHandler)
