@@ -1,8 +1,6 @@
 Input = Class{}
 
 function Input:init()
-    self.toggleLight = false
-    self.toggleDebug = false
     self.keysPressed = {
         ['a'] = false,
         ['s'] = false,
@@ -14,60 +12,39 @@ function Input:init()
         ['f6'] = false,
         ['space'] = false,
     }
+    self.keysReleased = {}
     self.keysDown = {}
+    self.keysDownDuration = {}
     for key in pairs(self.keysPressed) do
-        self.keysDown[key] = 0
+        self.keysReleased[key] = false
+        self.keysDown[key] = false
+        self.keysDownDuration[key] = 0
     end
 end
 
 function Input:update()
-    local camera = gameObjects['camera']
-
-    if self.keysDown['a'] > 0 and 0 < self.keysDown['d'] or
-        self.keysDown['a'] == self.keysDown['d'] then
-        player:setIdle()
-        
-    else
-        player:setWalk()
-        if     self.keysDown['a'] > 0 then player.direction = -1
-        elseif self.keysDown['d'] > 0 then player.direction = 1
-        end
-    end
-    
-    if (self.keysDown['space']) == 1 and gameObjects["battery"].charge > 0 then
-        lightSources['flashlight'].visible = not lightSources['flashlight'].visible
+    -- keysPressed only stays true for one frame
+    for key in pairs(self.keysPressed) do
+        self.keysPressed[key] = false
+        self.keysReleased[key] = false
     end
 
-    if (self.keysDown['q'] + self.keysDown['e']) % math.floor(FPS_LIMIT*.5) == 1 then
-        SoundSystem.play("interact")
-        local turnDirection =  -1
-        if self.keysDown['q'] > self.keysDown['e'] then turnDirection = 1 end
-        
-        local angle = player.angle + math.pi/4 * player.direction * turnDirection
-        if math.abs(angle) > math.pi/2 then
-            if not player.walking then
-                player.direction = player.direction *-1
-                camera.center = true
-            end
-        else player.angle = angle end     
-    end
-
-    if self.keysPressed['f5'] then self.toggleLight = not self.toggleLight end
-    if self.keysPressed['f6'] then self.toggleDebug = not self.toggleDebug end
-
-    for key in pairs(self.keysPressed) do self.keysPressed[key] = false end
-    for key in pairs(self.keysDown) do
-        if self.keysDown[key] > 0 then 
-            self.keysDown[key] = self.keysDown[key] + 1
-        end
+    -- keysDown stays true the entire time the key is pressed down
+    for key in pairs(self.keysDownDuration) do
+        if self.keysDown[key] then
+             self.keysDownDuration[key] = self.keysDownDuration[key] + 1
+        else self.keysDownDuration[key] = 0 end
     end
 end
 
 function love.keypressed(key)
-    input.keysPressed[key] = true
-    input.keysDown[key] = 1
+    if not input.keysDown[key] then
+        input.keysPressed[key] = true
+        input.keysDown[key] = true
+    end
 end
 
 function love.keyreleased(key)
-    input.keysDown[key] = 0
+    input.keysDown[key] = false
+    input.keysReleased[key] = true
 end

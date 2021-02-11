@@ -7,6 +7,7 @@ function Animation:init(source, cycle, speed, width, height, xOrigin, yOrigin)
     self.frame = 1
     self.width = width
     self.height = height
+    self.reverse = false
     self.origin = {
         x = xOrigin or math.floor(self.width/2),
         y = yOrigin or math.floor(self.height/2)
@@ -14,7 +15,9 @@ function Animation:init(source, cycle, speed, width, height, xOrigin, yOrigin)
 end
 
 function Animation:update()
-    self.frame = (self.frame + self.speed) % #self.cycle
+    if self.reverse then
+         self.frame = (self.frame - self.speed) % #self.cycle
+    else self.frame = (self.frame + self.speed) % #self.cycle end
 end
 
 function Animation:render(x, y, sx, sy)
