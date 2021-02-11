@@ -22,15 +22,6 @@ function love.load()
             fullscreen = false,
         }
     )
-    local points = {}
-    for i = 0, 1000 do
-        points[#points+1] = {
-            love.math.random(21) - 10,
-            love.math.random(21) - 10,
-        }
-    end
-    local test = Raycaster({points})
-    test:sortByAngle({0,0})
     
     Graphics:Load()
     SoundSystem:Load()
@@ -53,17 +44,6 @@ end
 function updateGame()
     state:update()
     input:update()
-end
-function shadows()
-    if not input.toggleLight then
-        for i, light in pairs(lightSources) do
-            if light.visible then
-                for k, obstruction in pairs(obstructions) do
-                    light:shadows()
-                end
-            end
-        end
-    end
 end
 
 function love.draw()

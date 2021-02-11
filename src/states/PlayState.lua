@@ -10,7 +10,16 @@ local alphaHandler = love.graphics.newShader[[
             discard;
         }
         return vec4(0.0);
-    }]]
+    }
+]]
+local shadowHandler = love.graphics.newShader[[
+    vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords) {
+        if (Texel(texture, texture_coords).rgb == vec3(0.0)) {
+            discard;;
+        }
+        return vec4(0.0);
+    }
+]]
 
 function PlayState:init()
     gameObjects['camera'] = Camera(70, 117, 12, 3, 3)
@@ -62,8 +71,7 @@ function PlayState:render()
     love.graphics.setColor(COLOR_DARK)
     love.graphics.rectangle('fill',0,0,VIRTUAL_WIDTH,VIRTUAL_WIDTH)
 
-    -- Draw lights and use them as a mask
-    love.graphics.setColor(COLOR_LIGHT)
+    -- Render mask using light sources
     love.graphics.stencil(self.lights, "replace", 1)
     love.graphics.setStencilTest("greater", 0)
 
@@ -71,7 +79,6 @@ function PlayState:render()
     love.graphics.setColor(1,1,1)
     love.graphics.draw(background, -math.floor(camera.pos.x), -math.floor(camera.pos.y))
     for i in pairs(gameObjects) do gameObjects[i]:render() end
-    for i in pairs(ui) do ui[i]:render() end
 
 
     -- Draw shadows next
@@ -80,26 +87,26 @@ function PlayState:render()
     love.graphics.stencil(self.shadows, "replace", 1)
     love.graphics.rectangle('fill',0,0,VIRTUAL_WIDTH,VIRTUAL_WIDTH)
 
-    -- Clear mask
+    -- Clear mask and draw UI
+    love.graphics.setColor(1,1,1)
     love.graphics.setStencilTest()
-end
+    for i in pairs(ui) do ui[i]:render() end
 
-function PlayState:shadows()
-    for j in pairs(obstructions) do
-        lightSources['flashlight']:shadows(obstructions[j])
-    end
+    tester:calculate(lightSources['flashlight'].pos)
 end
-
 function PlayState:lights()
+    love.graphics.setShader(shadowHandler)
     if not toggleLight then
         for key, light in pairs(lightSources) do
+            love.graphics.setColor(1,1,1)
             light:render()
+            -- love.graphics.setColor(0,0,0)
+            -- shadows:render(light)
         end
     else love.graphics.rectangle('fill',0,0,VIRTUAL_WIDTH,VIRTUAL_HEIGHT) end
     
-    -- UI_elements
+    -- Exclude player from mask. Shader filters out transparent pixels from image file.
     love.graphics.setShader(alphaHandler)
-    for element in pairs(ui) do ui[element]:render() end
     player:render()
     love.graphics.setShader()
 end
