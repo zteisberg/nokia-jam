@@ -27,12 +27,12 @@ function PlayState:init()
 
     -- obstructions['bathroomDoorSideA'] = Obstruction(90,135,10,10)
 
-    lightSources['tvLight'] = LightSource(110, 172, 50, {.5,.6,.7,.8,.85,.9})
+    lightSources['tvLight'] = LightSource(110, 172, 50, {.5, .075})
     lightSources['tvLight']:setAngle(math.pi *6/8, math.pi /8)
     lightSources['tvLight']:setAnimation(50, 70)
     -- lightSources['tvLight'].visible = false
     lightSources['flashlight'] = Flashlight(math.pi/3, 80)
-    lightSources['headlight'] = LightSource(-100,-100,20, {.5,.6,.7,.8,.9})
+    lightSources['headlight'] = LightSource(-100,-100,20, {.7, .03})
 end
 
 function PlayState:enter(parameters)
@@ -51,7 +51,8 @@ function PlayState:update()
         x = player.pos.x + 1 * player.direction,
         y = player.pos.y - 22
     }
-    lightSources['headlight']:setRadius(lightSources['headlight'].radius - 0.01)
+    lightSources['headlight'].direction = player.direction
+    lightSources['headlight']:adjustRadius( - 0.01 )
     self:handleInput()
 end
 
@@ -106,15 +107,20 @@ end
 function PlayState:handleInput()
     if player.state ~= 'stairs' then
         local moveDirection = 0
+        player.animation.reverse = false
 
-        if     input.keysDown['a'] == input.keysDown['d'] then player:setIdle()
+        if not input.keysDown['a'] and not input.keysDown['d'] then player:setIdle()
         elseif input.keysDown['a'] or input.keysDown['d'] then player:setWalk()
-            if input.keysDown['a'] then moveDirection = -1 end
-            if input.keysDown['d'] then moveDirection = 1 end
+            if input.keysDownDuration['a'] > input.keysDownDuration['d'] then
+                 moveDirection = -1
+            else moveDirection = 1 end
+            if input.keysDown['a'] and input.keysDown['d'] then
+                moveDirection = moveDirection * -1
+            end
             if player.direction ~= moveDirection then
                  camera.pos.x = camera.pos.x + moveDirection * 2
                  player.animation.reverse = true
-            else player.animation.reverse = false end
+            end
             player.pos.x = player.pos.x + moveDirection
         end
 

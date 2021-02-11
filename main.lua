@@ -22,9 +22,19 @@ function love.load()
             fullscreen = false,
         }
     )
-
+    local points = {}
+    for i = 0, 1000 do
+        points[#points+1] = {
+            love.math.random(21) - 10,
+            love.math.random(21) - 10,
+        }
+    end
+    local test = Raycaster({points})
+    test:sortByAngle({0,0})
+    
     Graphics:Load()
     SoundSystem:Load()
+    LightSource:Load()
     input = Input()
     state = StateHandler()
     state:addState('play', function() return PlayState() end, true)

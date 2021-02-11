@@ -16,7 +16,7 @@ require 'src/Arrow'
 require 'src/Button'
 require 'src/Battery'
 
-require 'src/Obstruction'
+require 'src/Raycaster'
 require 'src/LightSource'
 require 'src/Flashlight'
 
