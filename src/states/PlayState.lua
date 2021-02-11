@@ -84,8 +84,9 @@ function PlayState:render()
     love.graphics.setColor(1,1,1)
     love.graphics.setStencilTest()
     for i in pairs(ui) do ui[i]:render() end
-    
+
 end
+
 function PlayState:lights()
     love.graphics.setShader(shadowHandler)
     if not toggleLight then
