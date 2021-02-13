@@ -9,6 +9,7 @@ function SoundSystem:Load()
         ['open_door'] = love.audio.newSource('assets/sounds/open_door.wav', 'static'),
         ['steps'] = love.audio.newSource('assets/sounds/steps.wav', 'static'),
         ['win'] = love.audio.newSource('assets/sounds/win.wav', 'static'),
+        ['turn_on_flashlight'] = love.audio.newSource('assets/sounds/turn_on_flashlight.wav', 'static')
     }
 end
 

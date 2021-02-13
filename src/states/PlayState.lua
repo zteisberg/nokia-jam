@@ -132,6 +132,7 @@ function PlayState:handleInput()
     end
     
     if (input.keysPressed['space']) and ui["battery"].charge > 0 then
+        SoundSystem.play("turn_on_flashlight")
         lightSources['flashlight'].visible = not lightSources['flashlight'].visible
     end
 
