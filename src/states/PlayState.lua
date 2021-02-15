@@ -1,10 +1,7 @@
 PlayState = Class{__includes = BaseState}
 
-local ui = {}
-local gameObjects = {}
-local obstructions = {}
-local lightSources = {}
-local alphaHandler = love.graphics.newShader[[
+-- Throws out transparent pixels so that they won't be included in the stencil
+local ALPHA_HANDLER = love.graphics.newShader[[
     vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords) {
         if (Texel(texture, texture_coords).a == 0) {
             discard;
@@ -12,17 +9,15 @@ local alphaHandler = love.graphics.newShader[[
         return vec4(0.0);
     }
 ]]
-local shadowHandler = love.graphics.newShader[[
-    vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords) {
-        if (Texel(texture, texture_coords).rgb == vec3(0.0)) {
-            discard;;
-        }
-        return vec4(0.0);
-    }
-]]
+
+local ui = {}
+local gameObjects = {}
+local walls = {}
+local lightSources = {}
+local shadows = nil
 
 function PlayState:init()
-    gameObjects['camera'] = Camera(70, 117, 12, 3, 3)
+    gameObjects['camera'] = Camera(70, 117, 12, 3, 4)
     gameObjects['dad'] = Dad(110, 161, true, false)
     gameObjects['tv'] = Objects('TV', 96, 155)
 
@@ -34,14 +29,19 @@ function PlayState:init()
     camera = gameObjects['camera']
     background = love.graphics.newImage('assets/sideA.png')
 
-    -- obstructions['bathroomDoorSideA'] = Obstruction(90,135,10,10)
-
     lightSources['tvLight'] = LightSource(110, 172, 50, {.5, .075})
     lightSources['tvLight']:setAngle(math.pi *6/8, math.pi /8)
     lightSources['tvLight']:setAnimation(50, 70)
     -- lightSources['tvLight'].visible = false
-    lightSources['flashlight'] = Flashlight(math.pi/3, 80)
-    lightSources['headlight'] = LightSource(-100,-100,20, {.7, .03})
+    lightSources['flashlight'] = Flashlight(math.pi/2, 80)
+    lightSources['headlight'] = LightSource(-100,-100,40, {.7, .03})
+
+    walls = {{{x=5,y=58}, {x=175,y=58}, {x=175,y=166}, {x=5,y=166}}}
+    walls[#walls + 1] = {{x=5,y=112}, {x=124,y=112}}
+    walls[#walls + 1] = {{x=58,y=112}, {x=58, y=132}}
+    walls[#walls + 1] = {{x=90,y=58}, {x=90,y=112}}
+    walls["door"] = {{x=58,y=112}, {x=58,y=166}}
+    shadows = Raycaster(walls)
 end
 
 function PlayState:enter(parameters)
@@ -72,9 +72,15 @@ function PlayState:render()
     love.graphics.rectangle('fill',0,0,VIRTUAL_WIDTH,VIRTUAL_WIDTH)
 
     -- Render mask using light sources
+    love.graphics.setColor(1,1,1)
     love.graphics.stencil(self.lights, "replace", 1)
-    love.graphics.setStencilTest("greater", 0)
-
+    if toggleDebug or toggleLight then
+        love.graphics.setStencilTest("greater", 0)
+    else
+        love.graphics.stencil(self.visibility, "increment", 1, true)
+        love.graphics.setStencilTest("greater", 2)
+    end
+    
     -- Draw background, objects, and characters
     love.graphics.setColor(1,1,1)
     love.graphics.draw(background, -math.floor(camera.pos.x), -math.floor(camera.pos.y))
@@ -84,24 +90,26 @@ function PlayState:render()
     love.graphics.setColor(1,1,1)
     love.graphics.setStencilTest()
     for i in pairs(ui) do ui[i]:render() end
-
+    if toggleDebug then shadows:render(lightSources['flashlight'].pos) end
 end
 
 function PlayState:lights()
-    love.graphics.setShader(shadowHandler)
-    if not toggleLight then
+    if not toggleLight then --
         for key, light in pairs(lightSources) do
-            love.graphics.setColor(1,1,1)
-            light:render()
-            -- love.graphics.setColor(0,0,0)
-            -- shadows:render(light)
+            if light.visible then light:render() end
         end
     else love.graphics.rectangle('fill',0,0,VIRTUAL_WIDTH,VIRTUAL_HEIGHT) end
     
     -- Exclude player from mask. Shader filters out transparent pixels from image file.
-    love.graphics.setShader(alphaHandler)
+    love.graphics.setShader(ALPHA_HANDLER)
     player:render()
     love.graphics.setShader()
+end
+
+function PlayState:visibility()
+    for key, light in pairs(lightSources) do
+        if light.visible then shadows:render(light.pos) end
+    end
 end
 
 function PlayState:handleInput()
@@ -151,4 +159,15 @@ function PlayState:handleInput()
     if input.keysPressed['w'] then player:setStairsUp() end
     if input.keysPressed['f5'] then toggleLight = not toggleLight end
     if input.keysPressed['f6'] then toggleDebug = not toggleDebug end
+    if input.keysPressed['f7'] then toggleMouse = not toggleMouse end
+    if input.keysDown['left'] then
+        for i, pt in pairs(walls['door']) do
+            pt.x = pt.x - 5
+        end
+    end
+    if input.keysDown['right'] then
+        for i, pt in pairs(walls['door']) do
+            pt.x = pt.x + 5
+        end
+    end
 end

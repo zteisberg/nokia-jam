@@ -14,6 +14,11 @@ function Camera:update()
         y = ((player.pos.y - self.pos.y - self.margin.y) / (VIRTUAL_HEIGHT - self.margin.y * 2) - 1) * 2
     }
 
+    if toggleMouse then
+        relativePos.x = relativePos.x + love.mouse.getX()/love.graphics.getWidth() - (player.direction + 1)/2
+        relativePos.y = relativePos.y + love.mouse.getY()/love.graphics.getHeight()
+    end
+
     if player.state == 'stairs' then
         relativePos.y = relativePos.y - player:getHeightOffset()/VIRTUAL_HEIGHT
     end
@@ -23,7 +28,7 @@ function Camera:update()
         y = self.speed * (relativePos.y - player.angle / math.pi * 2)
     }
 
-    if player.state == 'walking' then
+    if player.state == 'walking' or toggleMouse then
         self.pos.x = math.floor(self.pos.x + d.x + 0.5)
     
     elseif player.state == 'stairs' then

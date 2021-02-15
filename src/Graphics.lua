@@ -56,19 +56,19 @@ function Graphics:ExtractCycle(spriteSheet, width, height, xStart, yStart, xGap,
 end
 
 function Graphics:ExtractDadIdle(spriteSheet)
-    return self:ExtractCycle(spriteSheet, 17, 32, 5, 1, 13, 262)
+    return self:ExtractCycle(spriteSheet, 30, 31, 0, 1, 0, 270)
 end
 
 function Graphics:ExtractDadIdleFL(spriteSheet)
-    return self:ExtractCycle(spriteSheet, 24, 31, 5, 38, 6, 269)
+    return self:ExtractCycle(spriteSheet, 30, 31, 0, 34, 0, 270)
 end
 
 function Graphics:ExtractDadWalk(spriteSheet)
-    return self:ExtractCycle(spriteSheet, 22, 32, 2, 73, 8, 234)
+    return self:ExtractCycle(spriteSheet, 30, 31, 0, 67, 0, 240)
 end
 
 function Graphics:ExtractDadWalkFL(spriteSheet)
-    return self:ExtractCycle(spriteSheet, 26, 31, 3, 110, 4, 239)
+    return self:ExtractCycle(spriteSheet, 30, 31, 0, 100, 0, 240)
 end
 
 function Graphics:ExtractDadStairsUp(spriteSheet)
