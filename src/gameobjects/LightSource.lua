@@ -25,19 +25,9 @@ function LightSource:init(x, y, radius, falloff)
     GameObject.init(self, x or 0, y or 0)
     self.visible = true
     self.radius = radius             -- radius of light source
-    self.falloff = falloff           -- measured in percent of radius
+    self:setFalloff(falloff)         -- measured in percent of radius           
     self.rotation = 0                -- angle offset of the start of the lightsource
     self.angle = math.pi * 2         -- width of the light source arc in radians
-    
-    
-    if #falloff < 3 and falloff[#falloff] < 1 then
-        local step = falloff[#falloff]
-        for i = #self.falloff, #INTENSITY_MAP + 1 do
-            self.falloff[i] = self.falloff[i-1] + step end
-    else
-        for i = #self.falloff + 1, #INTENSITY_MAP + 1 do  -- unfilled falloff values default to 100%
-            self.falloff[i] = 1 end
-    end
 end
 
 function LightSource:update(dt)
@@ -83,7 +73,7 @@ function LightSource:shadows(osbstruction)
 end
 
 function LightSource:setAngle(angle, rotation)
-    self.rotation = rotation
+    self.rotation = rotation or -angle/2
     self.angle = angle
     self.calcVectors(self)
 end
@@ -91,6 +81,26 @@ end
 function LightSource:setRotation(rotation)
     self.rotation = rotation
     self.calcVectors(self)
+end
+
+function LightSource:setFalloff(falloff)
+    if type(falloff) == 'table' then self.falloff = falloff
+    else self.falloff = {falloff} end
+
+    if #self.falloff == 1 and self.falloff[1] < 1 then
+        local step = (1 - self.falloff[1]) / #INTENSITY_MAP
+        for i = 2, #INTENSITY_MAP + 1 do
+            self.falloff[i] = self.falloff[i-1] + step end
+    
+    elseif #self.falloff == 2 and falloff[2] < 1 - falloff[1] then
+        local step = falloff[2]
+        for i = 2, #INTENSITY_MAP + 1 do
+            self.falloff[i] = self.falloff[i-1] + step end
+    
+    else
+        for i = #self.falloff + 1, #INTENSITY_MAP + 1 do  -- unfilled falloff values default to 100%
+            self.falloff[i] = 1 end
+    end
 end
 
 function LightSource:adjustRadius(amount)

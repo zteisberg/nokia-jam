@@ -1,21 +1,19 @@
 Input = Class{}
 
+local KEYS_IN_USE = {
+    'a', 's', 'd', 'w',
+    'q', 'e', 'x', 'z',
+    'c', 'space',
+    'f5', 'f6', 'f7',
+}
+
 function Input:init()
-    self.keysPressed = {
-        ['a'] = false,
-        ['s'] = false,
-        ['d'] = false,
-        ['w'] = false,
-        ['q'] = false,
-        ['e'] = false,
-        ['f5'] = false,
-        ['f6'] = false,
-        ['space'] = false,
-    }
+    self.keysPressed = {}
     self.keysReleased = {}
     self.keysDown = {}
     self.keysDownDuration = {}
-    for key in pairs(self.keysPressed) do
+    for i, key in pairs(KEYS_IN_USE) do
+        self.keysPressed[key] = false
         self.keysReleased[key] = false
         self.keysDown[key] = false
         self.keysDownDuration[key] = 0

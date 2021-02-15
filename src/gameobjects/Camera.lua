@@ -2,7 +2,7 @@ Camera = Class{__includes = GameObject}
 
 function Camera:init(x,y,speed, xMargin, yMargin)
     GameObject.init(self, x, y)
-    self.speed = speed
+    self.speed = speed * (ZOOM_LEVEL/2 + 0.5)
     self.margin = {x=xMargin, y=yMargin}
     self.center = true
 end
@@ -20,21 +20,19 @@ function Camera:update()
     end
 
     local d = {
-        x = self.speed * (ZOOM_LEVEL/2+.5) * (relativePos.x + (player.direction - 1) * .5),
-        y = self.speed * (ZOOM_LEVEL/2+.5) * (relativePos.y - player.angle / VIRTUAL_HEIGHT * 30)
+        x = self.speed * (relativePos.x + (player.direction - 1) * .5),
+        y = self.speed * (relativePos.y - player.angle / VIRTUAL_HEIGHT * 30)
     }
 
-    if player.state == 'walking' or toggleMouse then
-        self.pos.x = math.floor(self.pos.x + d.x + 0.5)
-    
-    elseif player.state == 'stairs' then
-        self.pos.x = math.floor(self.pos.x + d.x + 0.5)
-
-    elseif self.center then
-        self.pos.x = math.floor(self.pos.x + d.x/2 + 0.5)
-        if math.abs(d.x) <= 6 then self.center = false end
+    if self.center then
+        d.x = d.x - self.speed/2 * player.direction
+        if math.abs(1 - relativePos.x * 2) < 0.075 then self.center = false end
     end
-    
+
+    if player.state == 'walking' or toggleMouse or self.center then
+        self.pos.x = math.floor(self.pos.x + d.x + 0.5)
+    end
+
     self.pos.y = math.floor(self.pos.y + d.y)
 end
 

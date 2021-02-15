@@ -1,7 +1,7 @@
 Flashlight = Class{__includes = LightSource}
 
 function Flashlight:init(angle, distance)
-    LightSource.init(self, -1000, -1000, distance, {.5,.05})
+    LightSource.init(self, -1000, -1000, distance, .5)
     LightSource.setAngle(self, angle, -angle/2)
 end
 

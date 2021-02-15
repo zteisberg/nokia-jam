@@ -3,7 +3,9 @@ GameObject = Class{}
 function GameObject:init(x, y)
     self.relative = true
     self.direction = 1
+    self.flip = 1
     self.pos = {x=x, y=y}
+    self.visible = true
 end
 
 function GameObject:move(x, y)
@@ -18,19 +20,21 @@ function GameObject:update()
 end
 
 function GameObject:render()
-    if self.animation then
-        self.animation:render(
-            math.floor(self.pos.x - (self.relative and camera.pos.x or 0)),
-            math.floor(self.pos.y - (self.relative and camera.pos.y or 0)),
-            self.direction
-        )
-    elseif self.sprite then
-        love.graphics.draw(
-            self.sprite, 
-            math.floor(self.pos.x - (self.relative and camera.pos.x or 0)), 
-            math.floor(self.pos.y - (self.relative and camera.pos.y or 0)),
-            0, self.direction
-        )
+    if self.visible then
+        if self.animation then
+            self.animation:render(
+                math.floor(self.pos.x - (self.relative and camera.pos.x or 0)),
+                math.floor(self.pos.y - (self.relative and camera.pos.y or 0)),
+                self.direction, self.flip
+            )
+        elseif self.sprite then
+            love.graphics.draw(
+                self.sprite, 
+                math.floor(self.pos.x - (self.relative and camera.pos.x or 0)), 
+                math.floor(self.pos.y - (self.relative and camera.pos.y or 0)),
+                0, self.direction
+            )
+        end
     end
 end
 

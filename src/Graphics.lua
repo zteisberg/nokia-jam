@@ -5,27 +5,36 @@ function Graphics:Load()
         ['FatherCycles1'] = love.graphics.newImage('assets/FatherCycles1.png'),
         ['FatherCycles2'] = love.graphics.newImage('assets/FatherCycles2.png'),
         ['FatherCycles3'] = love.graphics.newImage('assets/FatherCycles3.png'),
+        ['FatherCycles4'] = love.graphics.newImage('assets/FatherCycles4.png'),
         ['ButtonCycles'] = love.graphics.newImage('assets/UISheet.png'),
     }
     cycles = {
         ['DadIdle'] = self:ExtractDadIdle(textures['FatherCycles1']),
-        ['DadWalk'] = self:ExtractDadWalk(textures['FatherCycles1']),
         ['DadIdleFL'] = self:ExtractDadIdleFL(textures['FatherCycles1']),
         ['DadIdleFL45'] = self:ExtractDadIdleFL45(textures['FatherCycles2']),
         ['DadIdleFL90'] = self:ExtractDadIdleFL90(textures['FatherCycles2']),
+
+        ['DadWalk'] = self:ExtractDadWalk(textures['FatherCycles1']),
         ['DadWalkFL'] = self:ExtractDadWalkFL(textures['FatherCycles1']),
         ['DadWalkFL45'] = self:ExtractDadWalkFL45(textures['FatherCycles2']),
         ['DadWalkFL90'] = self:ExtractDadWalkFL90(textures['FatherCycles2']),
+
         ['DadStairsUp'] = self:ExtractDadStairsUp(textures['FatherCycles3']),
-        ['DadStairsDown'] = self:ExtractDadStairsDown(textures['FatherCycles3']),
         ['DadStairsUpFL'] = self:ExtractDadStairsUpFL(textures['FatherCycles3']),
+        ['DadStairsDown'] = self:ExtractDadStairsDown(textures['FatherCycles3']),
         ['DadStairsDownFL'] = self:ExtractDadStairsDownFL(textures['FatherCycles3']),
+        ['DadStairsExit'] = self:ExtractDadStairsExit(textures['FatherCycles4']),
+        ['DadStairsExitFL'] = self:ExtractDadStairsExitFL(textures['FatherCycles4']),
+        ['DadStairsEnter'] = self:ExtractDadStairsEnter(textures['FatherCycles4']),
+
+        ['BatteryPower'] = self:ExtractBatteryPower(textures['ButtonCycles']),
         ['ButtonIndicator'] = self:ExtractButtonPress(textures['ButtonCycles']),
         ['UpArrowIndicator'] = self:ExtractUpArrowIndicator(textures['ButtonCycles']),
-        ['BatteryPower'] = self:ExtractBatteryPower(textures['ButtonCycles']),
+        ['SideArrowIndicator'] = self:ExtractSideArrowIndicator(textures['ButtonCycles']),
     }
     sprites = {
-        ['SideA_TV'] = love.graphics.newImage('assets/sideA_TV.png'),
+        ['SideA_TV'] = love.graphics.newImage('assets/ForegroundObjects/sideA_TV.png'),
+        ['SideA_Railing'] = love.graphics.newImage('assets/ForegroundObjects/railing.png'),
     }
 end
 
@@ -103,7 +112,19 @@ function Graphics:ExtractDadStairsUpFL(spriteSheet)
 end
 
 function Graphics:ExtractDadStairsDownFL(spriteSheet)
-    return self:ExtractCycle(spriteSheet, 62, 73, 0, 222, 19)
+    return self:ExtractCycle(spriteSheet, 58, 73, 0, 222, 19)
+end
+
+function Graphics:ExtractDadStairsExit(spritesheet)
+    return self:ExtractCycle(spritesheet, 21, 38, 0, 1, 3)
+end
+
+function Graphics:ExtractDadStairsExitFL(spritesheet)
+    return self:ExtractCycle(spritesheet, 21, 38, 0, 40, 3)
+end
+
+function Graphics:ExtractDadStairsEnter(spritesheet)
+    return self:ExtractCycle(spritesheet, 21, 38, 0, 79, 3)
 end
 
 function Graphics:ExtractButtonPress(spriteSheet)

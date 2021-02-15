@@ -27,6 +27,7 @@ function love.load()
     Graphics:Load()
     SoundSystem:Load()
     LightSource:Load()
+    Interactable:Load()
     input = Input()
     state = StateHandler()
     state:addState('play', function() return PlayState() end, true)
@@ -38,6 +39,7 @@ function love.update(dt)
     currentFrameCycle = (currentFrameCycle + 1) % FPS_LIMIT
     if fpsTimer > FPS_FRAME_DURATION then
         updateGame()
+        SoundSystem.update()
         fpsTimer = fpsTimer - FPS_FRAME_DURATION
     end
 end

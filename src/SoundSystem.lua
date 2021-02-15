@@ -1,5 +1,7 @@
 SoundSystem = Class{}
 
+local queuedSounds = {}
+
 function SoundSystem:Load()
     sounds = {
         ['interact'] = love.audio.newSource('assets/sounds/interact.wav', 'static'),
@@ -12,7 +14,6 @@ function SoundSystem:Load()
         ['turn_on_flashlight'] = love.audio.newSource('assets/sounds/turn_on_flashlight.wav', 'static')
     }
 end
-
 function SoundSystem.play(sound)
     love.audio.stop()
     love.audio.play(sounds[sound])
@@ -24,3 +25,13 @@ function SoundSystem.playIfQuiet(sound)
     end
 end
 
+function SoundSystem.queue(sound)
+    queuedSounds[#queuedSounds + 1] = sound
+end
+
+function SoundSystem.update()
+    print(#queuedSounds)
+    if #queuedSounds > 0 and love.audio.getActiveSourceCount() == 0 then
+        SoundSystem.play(table.remove(queuedSounds,1))
+    end
+end

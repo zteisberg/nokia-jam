@@ -39,8 +39,8 @@ function Raycaster:render(origin)
                 local A = self:raycast({origin, {x=origin.x+1, y=origin.y}}, {pointA,pointB})
                 if A.t > 0 and A.u > 0 and A.u < 1 then
                     openSegments[#openSegments + 1] = {pointA, pointB}
-                    local intersection = self:interpolate(pointA, pointB, A.u)
-                    local distance = (intersection.x - origin.x)^2 + (intersection.y - origin.y)^2
+                    local intersection = interpolate( pointA, pointB, A.u )
+                    local distance = dist2( intersection, origin )
                     if (distance < minDistance) then
                         minDistance = distance
                         previous = openSegments[#openSegments]
@@ -52,7 +52,7 @@ function Raycaster:render(origin)
 
     -- love.graphics.setColor(0,1,0,.5)
     -- for k, segment in pairs(openSegments) do
-    --     love.graphics.line(segment[1].x - camera.pos.x, segment[1].y - camera.pos.y, segment[2].x - camera.pos.x, segment[2].y - camera.pos.y)
+    --     drawLine(pointA, pointB)
     -- end
 
     for i, pointA in pairs(self.points) do
@@ -60,8 +60,7 @@ function Raycaster:render(origin)
             if (pointA.angle < pointB.angle and pointA.angle > pointB.angle - 4) or pointA.angle > pointB.angle + 4 then
                 openSegments[#openSegments + 1] = {pointA, pointB}
                 if toggleDebug then
-                    love.graphics.setColor(i/#self.points,0,1-i/#self.points,0.5)
-                    love.graphics.line(pointA.x-camera.pos.x, pointA.y-camera.pos.y, pointB.x-camera.pos.x, pointB.y-camera.pos.y)
+                    drawColorLine( pointA, pointB, i/#self.points, 0, 1-i/#self.points, 0.5 )
                 end
             end
             -- print(i, #openSegments, math.floor(pointA.angle*10)/10, math.floor(pointB.angle*10)/10, action)
@@ -74,9 +73,9 @@ function Raycaster:render(origin)
         for k, segment in pairs(openSegments) do
             local A = self:raycast({origin, pointA}, segment)
             if A.t > 0 then
-                local intersection = self:interpolate(segment[1], segment[2], A.u)
+                local intersection = interpolateSegment(segment, A.u)
                 if A.u > 0 and A.u < 1 then
-                    local distance = (intersection.x - origin.x)^2 + (intersection.y - origin.y)^2
+                    local distance = dist2( intersection, origin )
                     if distance < minDistance then
                         minDistance = distance
                         nearest = segment
@@ -87,23 +86,22 @@ function Raycaster:render(origin)
 
                 if toggleDebug and A.u >= 0 and A.u <= 1 then
                     love.graphics.setColor(0,0,0,0.5)
-                    love.graphics.circle('fill', intersection.x - camera.pos.x, intersection.y - camera.pos.y, 4,4)
-                    love.graphics.setColor(1,1,1,0.2)
-                    love.graphics.line(origin.x - camera.pos.x, origin.y - camera.pos.y, intersection.x - camera.pos.x, intersection.y-camera.pos.y)
+                    drawCircle(intersection,4)
+                    drawColorLine( origin, intersection, 1,1,1,0.2 ) 
                     -- print(i .. ':', math.floor(A.u*1000)/1000, previous == nearest)
                 end
             end
         end
 
         -- if at the end of an endpoint of the nearest obstacle, add the endpoint to visible
-        if pointC and (pointC.x - origin.x)^2 + (pointC.y - origin.y)^2 <= minDistance then
+        if pointC and dist2(pointC, origin) <= minDistance then
             -- if #visible == 0 or (pointC.x ~= visible[#visible].x and pointC.y ~= visible[#visible].y) then
                 visible[#visible+1] = pointC
             -- end
 
             if toggleDebug then
                 love.graphics.setColor(0.5,0,0,0.5)
-                love.graphics.circle('fill', pointC.x - camera.pos.x, pointC.y - camera.pos.y, 4,4)
+                drawCircle(pointC,4)
             end
         end
         
@@ -115,13 +113,13 @@ function Raycaster:render(origin)
         -- end
         
         -- If at the start of an endpoint of the nearest obstacle, add the endpoint to visible
-        if pointE and (pointE.x - origin.x)^2 + (pointE.y - origin.y)^2 <= minDistance then
+        if pointE and dist2(pointE, origin) <= minDistance then
             -- if #visible == 0 or (pointE.x ~= visible[#visible].x and pointE.y ~= visible[#visible].y) then
                 visible[#visible+1] = pointE
             -- end
             if toggleDebug then
                 love.graphics.setColor(0,0.5,0,0.5)
-                love.graphics.circle('fill', pointE.x - camera.pos.x, pointE.y - camera.pos.y, 4,4)
+                drawCircle(pointE,4)
             end
         end
 
@@ -143,7 +141,7 @@ function Raycaster:render(origin)
 
         if toggleDebug then
             love.graphics.setColor(0,0,1,0.5)
-            love.graphics.print(i, pointA.x-camera.pos.x, pointA.y-camera.pos.y)
+            drawText(i, pointA)
         end
     end
 
@@ -234,14 +232,7 @@ function Raycaster:raycast(segment1, segment2)
     return {t=t, u=u}
 end
 
--- Returns a point on the line formed from A & B at a distance from A calculated
---                         as a given percentage of the distance between A and B
-function Raycaster:interpolate(pointA, pointB, percent)
-    return {
-        x = pointA.x * (1-percent) + pointB.x * percent,
-        y = pointA.y * (1-percent) + pointB.y * percent
-    }
-end
+
 
 -- -- Returns true if a reference point is to the left of an infinite line formed using A & B
 -- function leftOfSegment(ref, pointA, pointB)
