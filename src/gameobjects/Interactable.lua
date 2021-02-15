@@ -24,6 +24,8 @@ function Interactable:init(x, y, icon, activationRadius, activationKey, activati
     self.activationRadius = self.activationRadius^2
     self.activationFunction = activationFunction
     self.activationParameters = activationParameters
+    self.viewableRadius = self.activationRadius
+    self.keyDownIsOkay = false
     self.resetTime = resetTimeInFrames or -1
     self.resetTimer = 0
 end
@@ -31,12 +33,16 @@ end
 function Interactable:update()
     GameObject.update(self)
     self.resetTimer = self.resetTimer + 1
-    if self.isActive and dist2(player.pos, self.pos) < self.activationRadius then
-        if input.keysPressed[self.activationKey] then
-            if self.activationFunction then self.activationFunction(self, self.activationParameters) end
+    local distanceToPlayer = dist2(player.pos, self.pos)
+    if self.isActive and distanceToPlayer < self.activationRadius then
+        if input.keysPressed[self.activationKey]
+        or (input.keysDown[self.activationKey] and self.keyDownIsOkay) then
             self.isActive = false
+            if self.activationFunction then self.activationFunction(self, self.activationParameters) end
             self.resetTimer = 0
         end
+    end
+    if distanceToPlayer < self.viewableRadius then
         self.inRange = true
     else self.inRange = false end
     if self.resetTimer == self.resetTime then
@@ -45,7 +51,7 @@ function Interactable:update()
 end
 
 function Interactable:render()
-    if self.inRange then
+    if self.isActive and self.inRange then
         GameObject.render(self)
     end
 end

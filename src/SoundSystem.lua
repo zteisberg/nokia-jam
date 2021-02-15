@@ -30,7 +30,6 @@ function SoundSystem.queue(sound)
 end
 
 function SoundSystem.update()
-    print(#queuedSounds)
     if #queuedSounds > 0 and love.audio.getActiveSourceCount() == 0 then
         SoundSystem.play(table.remove(queuedSounds,1))
     end

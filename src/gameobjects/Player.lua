@@ -49,16 +49,35 @@ function Player:setWalk()
 end
 
 function Player:setStairsUp()
+    camera.center = false
     self.animation = self.animations['stairsUpFL']
-    self.animation.frame = 0
+    self.flashlightOffset = self.offset['stairsUpFL']
+    self.animation.speed = 0
     self.state = 'stairs'
+    self.angle = math.pi/4
+    self.direction = self.stairDirection
+    self.animation.callback = function()
+        camera.pos.y = camera.pos.y - 20
+        self:setIdle()
+        self.angle = 0
+        self.pos.y = self.pos.y - 45
+        self.pos.x = self.pos.x + 40 * self.stairDirection
+    end
 end
 
 function Player:setStairsDown()
     self.animation = self.animations['stairsDownFL']
-    self.animation.frame = 0
+    self.flashlightOffset = self.offset['stairsDownFL']
+    self.animation.speed = 0
     self.state = 'stairs'
-    self.angleStore = self.angle
+    self.angle = -3*math.pi/4
+    self.animation.callback = function()
+        camera.pos.y = camera.pos.y + 15
+        self:setStairsEntrance()
+        self.angle = 0
+        self.direction = -self.stairDirection
+        self.pos.x = self.pos.x - 6 * self.stairDirection
+    end
 end
 
 function Player:setStairsEntrance()

@@ -17,6 +17,12 @@ function Camera:update()
     if toggleMouse then
         relativePos.x = relativePos.x + love.mouse.getX()/love.graphics.getWidth() - (player.direction + 1)/2
         relativePos.y = relativePos.y + love.mouse.getY()/love.graphics.getHeight()
+    elseif player and player.state == 'stairs' then
+        relativePos.x = relativePos.x + player:getFlashlightX()/love.graphics.getWidth() * -5 + .5
+        relativePos.y = relativePos.y - player:getFlashlightY()/love.graphics.getHeight() * 9
+        relativePos.y = relativePos.y + (player.angle > 0 and .75 or -.2)
+    elseif player and player.state == 'stairsEntrance' then
+        relativePos.y = relativePos.y + 0.5
     end
 
     local d = {
@@ -29,7 +35,7 @@ function Camera:update()
         if math.abs(1 - relativePos.x * 2) < 0.075 then self.center = false end
     end
 
-    if player.state == 'walking' or toggleMouse or self.center then
+    if player.state == 'walking' or player.state == 'stairs' or toggleMouse or self.center then
         self.pos.x = math.floor(self.pos.x + d.x + 0.5)
     end
 

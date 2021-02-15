@@ -32,12 +32,13 @@ end
 function Animation:render(x, y, sx, sy)
     sx = sx or 1
     sy = sy or 1
+    local frame = math.max(math.min(self:getFrame(), #self.cycle), 0)
     love.graphics.draw(
-        self.source, self.cycle[self:getFrame()],
+        self.source, self.cycle[frame],
         x, y, 0, sx, sy, self.origin.x, self.origin.y
     )
 end
 
 function Animation:getFrame()
-    return math.floor(self.frame+1)
+    return math.floor(self.frame +1)
 end

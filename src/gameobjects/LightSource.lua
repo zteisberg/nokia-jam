@@ -28,6 +28,8 @@ function LightSource:init(x, y, radius, falloff)
     self:setFalloff(falloff)         -- measured in percent of radius           
     self.rotation = 0                -- angle offset of the start of the lightsource
     self.angle = math.pi * 2         -- width of the light source arc in radians
+    self.points = {}
+    self.offset = {x=0, y=0}
 end
 
 function LightSource:update(dt)
@@ -41,8 +43,8 @@ end
 function LightSource:render()
     if self.visible then
         local radius = math.floor(self.radius + 0.5)
-        local points = {}
         local transition = {}
+        self.points = {}
         for i = 1, #self.falloff do
             transition[i-1] = ( radius * self.falloff[i] )^2
         end
@@ -55,17 +57,20 @@ function LightSource:render()
                     for i = 0, #INTENSITY_MAP do
                         if dist2 <= transition[i] then 
                             if INTENSITY_MAP[i][(x+self.pos.x)%8][(y+self.pos.y)%8] then
-                                points[#points + 1] = x+self.pos.x-camera.pos.x
-                                points[#points + 1] = y+self.pos.y-camera.pos.y end
+                                self.points[#self.points + 1] = x+self.pos.x-camera.pos.x + self.offset.x
+                                self.points[#self.points + 1] = y+self.pos.y-camera.pos.y + self.offset.y end
                             break
                         end
                     end
                 end
             end
         end
-        love.graphics.points(points)
+        love.graphics.points(self.points)
     end
+end
 
+function LightSource:rerender()
+    love.graphics.points(self.points)
 end
 
 function LightSource:shadows(osbstruction)

@@ -1,7 +1,7 @@
 Raycaster = Class{__includes = GameObject}
 
 function Raycaster:init(shapes)
-    self.shapes, self.points = {}, {}
+    self.shapes, self.points, self.visible = {}, {}, {}
     for i, shape in pairs(shapes or {}) do self:addShape(shape, i) end
 end
 
@@ -26,7 +26,7 @@ end
 function Raycaster:render(origin)
     self:sortByAngle(origin)
 
-    local visible = {}
+    self.visible = {}
     local openSegments = {}
     local nearest, previous = nil, nil
     local pointD, pointC = nil, nil
@@ -95,8 +95,8 @@ function Raycaster:render(origin)
 
         -- if at the end of an endpoint of the nearest obstacle, add the endpoint to visible
         if pointC and dist2(pointC, origin) <= minDistance then
-            -- if #visible == 0 or (pointC.x ~= visible[#visible].x and pointC.y ~= visible[#visible].y) then
-                visible[#visible+1] = pointC
+            -- if #self.visible == 0 or (pointC.x ~= self.visible[#self.visible].x and pointC.y ~= self.visible[#self.visible].y) then
+            self.visible[#self.visible+1] = pointC
             -- end
 
             if toggleDebug then
@@ -107,15 +107,15 @@ function Raycaster:render(origin)
         
         -- If the nearest raycasted point (not on an endpoint) is on a different segment than the last, add it to visible
         -- if nearest ~= previous then
-            -- if #visible == 0 or (pointD.x ~= visible[#visible].x and pointD.y ~= visible[#visible].y) then
-                visible[#visible+1] = pointD
+            -- if #self.visible == 0 or (pointD.x ~= self.visible[#self.visible].x and pointD.y ~= self.visible[#self.visible].y) then
+            self.visible[#self.visible+1] = pointD
             -- end
         -- end
         
         -- If at the start of an endpoint of the nearest obstacle, add the endpoint to visible
         if pointE and dist2(pointE, origin) <= minDistance then
-            -- if #visible == 0 or (pointE.x ~= visible[#visible].x and pointE.y ~= visible[#visible].y) then
-                visible[#visible+1] = pointE
+            -- if #self.visible == 0 or (pointE.x ~= self.visible[#self.visible].x and pointE.y ~= self.visible[#self.visible].y) then
+            self.visible[#self.visible+1] = pointE
             -- end
             if toggleDebug then
                 love.graphics.setColor(0,0.5,0,0.5)
@@ -145,14 +145,14 @@ function Raycaster:render(origin)
         end
     end
 
-    for i = #visible, 2, -1 do
-        if visible[i].x == visible[i-1].x and visible[i].y == visible[i-1].y then
-            table.remove(visible, i)
+    for i = #self.visible, 2, -1 do
+        if self.visible[i].x == self.visible[i-1].x and self.visible[i].y == self.visible[i-1].y then
+            table.remove(self.visible, i)
         end
     end
 
     if toggleDebug then
-        for i, pt in pairs(visible) do
+        for i, pt in pairs(self.visible) do
             love.graphics.setColor(0,1,0,.5)
             love.graphics.rectangle('fill', pt.x - camera.pos.x-1, pt.y - camera.pos.y-1, 2, 2)
             love.graphics.print(i, pt.x - camera.pos.x - 15, pt.y - camera.pos.y - 15)
@@ -161,18 +161,34 @@ function Raycaster:render(origin)
     
     love.graphics.setColor(0,1,0,0.2)
     local source = {x = origin.x - camera.pos.x, y = origin.y - camera.pos.y}
-    for i = 1, #visible-1 do
+    for i = 1, #self.visible-1 do
         love.graphics.polygon('fill', source.x, source.y,
-            visible[i].x - camera.pos.x, visible[i].y - camera.pos.y,
-            visible[i+1].x - camera.pos.x, visible[i+1].y - camera.pos.y
+        self.visible[i].x - camera.pos.x, self.visible[i].y - camera.pos.y,
+        self.visible[i+1].x - camera.pos.x, self.visible[i+1].y - camera.pos.y
         )
     end
     
     love.graphics.polygon('fill', source.x, source.y,
-        visible[1].x - camera.pos.x, visible[1].y - camera.pos.y,
-        visible[#visible].x - camera.pos.x, visible[#visible].y - camera.pos.y
+    self.visible[1].x - camera.pos.x, self.visible[1].y - camera.pos.y,
+        self.visible[#self.visible].x - camera.pos.x, self.visible[#self.visible].y - camera.pos.y
     )
 end
+
+function Raycaster:rerender(origin)
+    local source = {x = origin.x - camera.pos.x, y = origin.y - camera.pos.y}
+    for i = 1, #self.visible-1 do
+        love.graphics.polygon('fill', source.x, source.y,
+        self.visible[i].x - camera.pos.x, self.visible[i].y - camera.pos.y,
+        self.visible[i+1].x - camera.pos.x, self.visible[i+1].y - camera.pos.y
+        )
+    end
+    
+    love.graphics.polygon('fill', source.x, source.y,
+    self.visible[1].x - camera.pos.x, self.visible[1].y - camera.pos.y,
+        self.visible[#self.visible].x - camera.pos.x, self.visible[#self.visible].y - camera.pos.y
+    )
+end
+
 
 -- Sorts points around a given point by angle formed between them and 
 function Raycaster:sortByAngle(origin) -- Using merge sort
