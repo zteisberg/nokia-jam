@@ -9,7 +9,7 @@ function Animation:init(source, cycle, speed, width, height, xOrigin, yOrigin)
     self.height = height
     self.reverse = false
     self.origin = {
-        x = xOrigin or math.floor(self.width/2),
+        x = xOrigin or math.floor(self.width /2),
         y = yOrigin or math.floor(self.height/2)
     }
 end

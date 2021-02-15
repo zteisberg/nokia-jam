@@ -1,13 +1,12 @@
 Player = Class{__includes = GameObject}
 
 
-function Player:init(x,y,animations,active,globalPositioning)
-    GameObject.init(self,x,y,globalPositioning)
+function Player:init(x,y,animations)
+    GameObject.init(self,x,y)
     self.animations = animations
-    self.active = active or false
     self.angle = 0
     self.angleStore = 0
-    self.heightOffset = {1,1,1,1,1,1,0,0,0}
+    self.flashlightOffset = nil
     self.direction = 1
     self.state = 'idle'
     self:setIdle()
@@ -27,12 +26,16 @@ function Player:update()
 end
 
 function Player:setIdle()
-    self.animation = self.animations['idleFL']
+    if     self.angle == 0         then self.animation = self.animations['idleFL']
+    elseif self.angle == math.pi/4 then self.animation = self.animations['idleFL45']
+    elseif self.angle == math.pi/2 then self.animation = self.animations['idleFL90'] end
     self.state = 'idle'
 end
 
 function Player:setWalk()
-    self.animation = self.animations['walkFL']
+    if     self.angle == 0         then self.animation = self.animations['walkFL']
+    elseif self.angle == math.pi/4 then self.animation = self.animations['walkFL45']
+    elseif self.angle == math.pi/2 then self.animation = self.animations['walkFL90'] end
     self.state = 'walking'
 end
 
@@ -49,6 +52,10 @@ function Player:setStairsDown()
     self.angleStore = self.angle
 end
 
-function Player:getHeightOffset()
-    return self.heightOffset[self.animation:getFrame()]
+function Player:getFlashlightX()
+    return self.flashlightOffset[self.animation:getFrame()][1]
+end
+
+function Player:getFlashlightY()
+    return self.flashlightOffset[self.animation:getFrame()][2]
 end

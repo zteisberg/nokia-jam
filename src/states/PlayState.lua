@@ -18,12 +18,12 @@ local shadows = nil
 
 function PlayState:init()
     gameObjects['camera'] = Camera(70, 117, 12, 3, 4)
-    gameObjects['dad'] = Dad(110, 161, true, false)
+    gameObjects['dad'] = Dad(110, 161)
     gameObjects['tv'] = Objects('TV', 96, 155)
 
-    ui['battery'] = Battery(1, 1, true, false)
-    ui['doorButton'] = Button(60, 125, true, true)
-    ui['stairsArrow'] = Arrow(160, 125, true, true)
+    ui['battery'] = Battery(1, 1)
+    ui['doorButton'] = Button(58, 125)
+    ui['stairsArrow'] = Arrow(160, 125)
 
     player = gameObjects['dad']
     camera = gameObjects['camera']
@@ -32,14 +32,15 @@ function PlayState:init()
     lightSources['tvLight'] = LightSource(110, 172, 50, {.5, .075})
     lightSources['tvLight']:setAngle(math.pi *6/8, math.pi /8)
     lightSources['tvLight']:setAnimation(50, 70)
-    -- lightSources['tvLight'].visible = false
-    lightSources['flashlight'] = Flashlight(math.pi/2, 80)
+    lightSources['tvLight'].visible = false
+    lightSources['flashlight'] = Flashlight(math.pi/3, 100)
     lightSources['headlight'] = LightSource(-100,-100,40, {.7, .03})
+    lightSources['headlight'].visible = false
 
     walls = {{{x=5,y=58}, {x=175,y=58}, {x=175,y=166}, {x=5,y=166}}}
-    walls[#walls + 1] = {{x=5,y=112}, {x=124,y=112}}
-    walls[#walls + 1] = {{x=58,y=112}, {x=58, y=132}}
+    walls[#walls + 1] = {{x=5,y=112}, {x=123,y=112}}
     walls[#walls + 1] = {{x=90,y=58}, {x=90,y=112}}
+    walls[#walls + 1] = {{x=58,y=112}, {x=58, y=132}}
     walls["door"] = {{x=58,y=112}, {x=58,y=166}}
     shadows = Raycaster(walls)
 end
@@ -48,7 +49,8 @@ function PlayState:enter(parameters)
 end
 
 function PlayState:update()
-    for key, obj in pairs(gameObjects)    do obj  :update() end
+    for key, element in pairs(ui)         do element:update() end
+    for key, obj in pairs(gameObjects)    do obj:update() end
     for key, light in pairs(lightSources) do light:update() end
     if lightSources['flashlight'].visible then
         ui['battery'].charge = math.max(ui['battery'].charge - 0.01, 0)
@@ -78,7 +80,7 @@ function PlayState:render()
         love.graphics.setStencilTest("greater", 0)
     else
         love.graphics.stencil(self.visibility, "increment", 1, true)
-        love.graphics.setStencilTest("greater", 2)
+        love.graphics.setStencilTest("greater", 1)
     end
     
     -- Draw background, objects, and characters

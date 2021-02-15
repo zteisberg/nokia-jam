@@ -60,7 +60,7 @@ function Raycaster:render(origin)
             if (pointA.angle < pointB.angle and pointA.angle > pointB.angle - 4) or pointA.angle > pointB.angle + 4 then
                 openSegments[#openSegments + 1] = {pointA, pointB}
                 if toggleDebug then
-                    love.graphics.setColor(i/12,0,1-i/12,0.5)
+                    love.graphics.setColor(i/#self.points,0,1-i/#self.points,0.5)
                     love.graphics.line(pointA.x-camera.pos.x, pointA.y-camera.pos.y, pointB.x-camera.pos.x, pointB.y-camera.pos.y)
                 end
             end
@@ -155,7 +155,7 @@ function Raycaster:render(origin)
 
     if toggleDebug then
         for i, pt in pairs(visible) do
-            love.graphics.setColor(1,1,1,.5)
+            love.graphics.setColor(0,1,0,.5)
             love.graphics.rectangle('fill', pt.x - camera.pos.x-1, pt.y - camera.pos.y-1, 2, 2)
             love.graphics.print(i, pt.x - camera.pos.x - 15, pt.y - camera.pos.y - 15)
         end

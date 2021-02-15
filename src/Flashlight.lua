@@ -8,13 +8,9 @@ end
 function Flashlight:update()
     LightSource.setRotation(self, math.pi/2*(1 - player.direction) - self.angle/2 + player.angle * player.direction)
     self.pos = {
-        x = player.pos.x + 11 * player.direction,
-        y = player.pos.y - 8 - player.heightOffset[player.animation:getFrame()]
+        x = player.pos.x + player:getFlashlightX() * player.direction - (player.direction-1)/2,
+        y = player.pos.y - player:getFlashlightY()
     }
-    if player.state == 'stairs' then
-        self.pos.x = self.pos.x + 1 + player:getHeightOffset() * player.direction
-        self.pos.y = self.pos.y - 15
-    end
 end
 
 function Flashlight:render()
