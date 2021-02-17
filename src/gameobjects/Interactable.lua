@@ -3,20 +3,23 @@ Interactable = Class{__includes = GameObject}
 local animations = {}
 
 function Interactable:Load()
-    animations['button'] = Animation(textures['ButtonCycles'], cycles['ButtonIndicator'], 1, 7, 7)
-    animations['up-arrow'] = Animation(textures['ButtonCycles'], cycles['UpArrowIndicator'], 0.25, 9, 9)
-    animations['right-arrow'] = Animation(textures['ButtonCycles'], cycles['SideArrowIndicator'], 0.25, 9, 9)
+    animations['button'] = function() return Animation(textures['ButtonCycles'], cycles['ButtonIndicator'], 0.15, 7, 7) end
+    animations['up-arrow'] = function() return Animation(textures['ButtonCycles'], cycles['UpArrowIndicator'], 0.25, 9, 9) end
+    animations['right-arrow'] = function() return Animation(textures['ButtonCycles'], cycles['SideArrowIndicator'], 0.25, 9, 9) end
     animations['down-arrow'] = animations['up-arrow']
     animations['left-arrow'] = animations['right-arrow']
+    animations['side-door-right'] = function() return Animation(textures['SideDoor'], cycles['SideDoor'], 0, 31, 45) end
+    animations['side-door-left'] = animations['side-door-right']
 end
 
-function Interactable:init(x, y, icon, activationRadius, activationKey, activationFunction, activationParameters, resetTimeInFrames)
+function Interactable:init(x, y, graphic, activationRadius, activationKey, activationFunction, activationParameters, resetTimeInFrames)
     GameObject.init(self, x, y)
-    if icon then
-        self.animation = animations[icon]
-        if     icon == 'down-arrow' then self.flip = -1
-        elseif icon == 'left-arrow' then self.direction = -1 end
+    if graphic then
+        self.animation = animations[graphic]()
+        if     graphic == 'down-arrow' then self.flip = -1
+        elseif graphic == 'left-arrow' or graphic == 'side-door-left' then self.direction = -1 end
     end
+    self.alwaysVisible = false
     self.inRange = false
     self.isActive = true
     self.activationKey = activationKey or nil
@@ -38,7 +41,7 @@ function Interactable:update()
         if input.keysPressed[self.activationKey]
         or (input.keysDown[self.activationKey] and self.keyDownIsOkay) then
             self.isActive = false
-            if self.activationFunction then self.activationFunction(self, self.activationParameters) end
+            if self.activationFunction then self:activationFunction(self.activationParameters) end
             self.resetTimer = 0
         end
     end
@@ -51,7 +54,7 @@ function Interactable:update()
 end
 
 function Interactable:render()
-    if self.isActive and self.inRange then
+    if self.alwaysVisible or (self.isActive and self.inRange) then
         GameObject.render(self)
     end
 end

@@ -23,7 +23,7 @@ function Raycaster:addShape(shape, name)
     self.points[#self.points + 1] = shape[#shape]
 end
 
-function Raycaster:render(origin)
+function Raycaster:render(origin, debug)
     self:sortByAngle(origin)
 
     self.visible = {}
@@ -36,7 +36,7 @@ function Raycaster:render(origin)
     for i, pointA in pairs(self.points) do
         for j, pointB in pairs(pointA.connectedPoints) do
             if pointA.angle < pointB.angle then
-                local A = self:raycast({origin, {x=origin.x+1, y=origin.y}}, {pointA,pointB})
+                local A = intersect({origin, {x=origin.x, y=origin.y-1}}, {pointA,pointB})
                 if A.t > 0 and A.u > 0 and A.u < 1 then
                     openSegments[#openSegments + 1] = {pointA, pointB}
                     local intersection = interpolate( pointA, pointB, A.u )
@@ -57,13 +57,13 @@ function Raycaster:render(origin)
 
     for i, pointA in pairs(self.points) do
         for j, pointB in pairs(pointA.connectedPoints) do
-            if (pointA.angle < pointB.angle and pointA.angle > pointB.angle - 4) or pointA.angle > pointB.angle + 4 then
+            if (pointA.angle < pointB.angle and pointA.angle > pointB.angle - math.pi) or pointA.angle > pointB.angle + math.pi then
                 openSegments[#openSegments + 1] = {pointA, pointB}
-                if toggleDebug then
+                if toggleDebug and debug then
                     drawColorLine( pointA, pointB, i/#self.points, 0, 1-i/#self.points, 0.5 )
                 end
             end
-            -- print(i, #openSegments, math.floor(pointA.angle*10)/10, math.floor(pointB.angle*10)/10, action)
+            -- print(i, #openSegments, math.floor(pointA.angle*180/math.pi), math.floor(pointB.angle*180/math.pi), action)
         end
 
         minDistance = 1/0
@@ -71,7 +71,7 @@ function Raycaster:render(origin)
         local pointC, pointD, pointE = nil, nil, nil
 
         for k, segment in pairs(openSegments) do
-            local A = self:raycast({origin, pointA}, segment)
+            local A = intersect({origin, pointA}, segment)
             if A.t > 0 then
                 local intersection = interpolateSegment(segment, A.u)
                 if A.u > 0 and A.u < 1 then
@@ -84,7 +84,7 @@ function Raycaster:render(origin)
                 elseif A.u == 0 then pointE = intersection
                 elseif A.u == 1 then pointC = intersection end
 
-                if toggleDebug and A.u >= 0 and A.u <= 1 then
+                if toggleDebug and debug and A.u >= 0 and A.u <= 1 then
                     love.graphics.setColor(0,0,0,0.5)
                     drawCircle(intersection,4)
                     drawColorLine( origin, intersection, 1,1,1,0.2 ) 
@@ -94,12 +94,12 @@ function Raycaster:render(origin)
         end
 
         -- if at the end of an endpoint of the nearest obstacle, add the endpoint to visible
-        if pointC and dist2(pointC, origin) <= minDistance then
+        if pointC and dist2(pointC, origin) < minDistance then
             -- if #self.visible == 0 or (pointC.x ~= self.visible[#self.visible].x and pointC.y ~= self.visible[#self.visible].y) then
             self.visible[#self.visible+1] = pointC
             -- end
 
-            if toggleDebug then
+            if toggleDebug and debug then
                 love.graphics.setColor(0.5,0,0,0.5)
                 drawCircle(pointC,4)
             end
@@ -113,11 +113,11 @@ function Raycaster:render(origin)
         -- end
         
         -- If at the start of an endpoint of the nearest obstacle, add the endpoint to visible
-        if pointE and dist2(pointE, origin) <= minDistance then
+        if pointE and dist2(pointE, origin) < minDistance then
             -- if #self.visible == 0 or (pointE.x ~= self.visible[#self.visible].x and pointE.y ~= self.visible[#self.visible].y) then
             self.visible[#self.visible+1] = pointE
             -- end
-            if toggleDebug then
+            if toggleDebug and debug then
                 love.graphics.setColor(0,0.5,0,0.5)
                 drawCircle(pointE,4)
             end
@@ -127,8 +127,7 @@ function Raycaster:render(origin)
         previous = nearest
 
         for j, pointB in pairs(pointA.connectedPoints) do
-        --- if (pointA.angle < pointB.angle and pointA.angle > pointB.angle - 4) or pointA.angle > pointB.angle + 4 then
-            if not (pointA.angle < pointB.angle and pointA.angle > pointB.angle - 4) and pointA.angle <= pointB.angle + 4 then
+            if not (pointA.angle < pointB.angle and pointA.angle > pointB.angle - math.pi) and pointA.angle <= pointB.angle + math.pi then
                 for k, segment in pairs(openSegments) do
                     if  (segment[1] == pointB or segment[2] == pointB)
                     and (segment[1] == pointA or segment[2] == pointA) then
@@ -139,7 +138,7 @@ function Raycaster:render(origin)
         end
 
 
-        if toggleDebug then
+        if toggleDebug and debug then
             love.graphics.setColor(0,0,1,0.5)
             drawText(i, pointA)
         end
@@ -151,11 +150,11 @@ function Raycaster:render(origin)
         end
     end
 
-    if toggleDebug then
+    if toggleDebug and debug then
         for i, pt in pairs(self.visible) do
             love.graphics.setColor(0,1,0,.5)
             love.graphics.rectangle('fill', pt.x - camera.pos.x-1, pt.y - camera.pos.y-1, 2, 2)
-            love.graphics.print(i, pt.x - camera.pos.x - 15, pt.y - camera.pos.y - 15)
+            -- love.graphics.print(i, pt.x - camera.pos.x - 15, pt.y - camera.pos.y - 15)
         end
     end
     
@@ -198,7 +197,7 @@ function Raycaster:sortByAngle(origin) -- Using merge sort
     for i, point in pairs(self.points) do
         local dx = point.x - origin.x
         local dy = point.y - origin.y
-        point.angle = self:pseudoangle(dx, dy) % 8
+        point.angle = (math.atan2(dx, dy) + math.pi) % (math.pi * 2)
     end
 
     -- Non-recursive merge sort. Less function calls = faster.
@@ -224,28 +223,6 @@ function Raycaster:sortByAngle(origin) -- Using merge sort
         self.points = temp
         step = step * 2
     end
-end
-
-function Raycaster:pseudoangle(dx, dy)   -- Uses the tan/cot functions to generate a pseudoangle from -1 to 7. See https://stackoverflow.com/a/27253590
-    local diag  = dx >  dy  -- if true, angle must be from -135 to 45 degrees and vice versa. The name  diag refers to the  diagonal formed from y = x  (slope = /)
-    local adiag = dx > -dy  -- if true, angle must be from -45 to 135 degrees and vice versa The name adiag refers to anti-diagonal formed from y = -x (slope = \)
-    local angle = adiag and 0 or 4   -- Baseline to start (using dy=0 as reference), angle starts at either 0 or 180 degrees (0 or 4)
-    if dy == 0 then return angle end -- If there is no dy, pseudoangle is already correct
-    if diag ~= adiag then            -- There are four quadrants formed from the lines y=x and y=-x
-         return angle - dx/dy + 2    -- If in top or bottom quadrant, sub cot (dx/dy) and add 2. (Quadrants are offset by a value of 2)
-    else return angle + dy/dx end    -- If in left or right quadrant, add tan (dy/dx). No need to offset since angle starts in left or right quadrants already.
-end
-
--- Returns a determinant that defines if two lines/rays/segments intersect. See https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection
-function Raycaster:raycast(segment1, segment2)
-    local x1, y1 = segment1[1].x, segment1[1].y
-    local x2, y2 = segment1[2].x, segment1[2].y
-    local x3, y3 = segment2[1].x, segment2[1].y
-    local x4, y4 = segment2[2].x, segment2[2].y
-    local denominator = ( (x1-x2)*(y3-y4) - (y1-y2)*(x3-x4) )
-    local t = ( (x1-x3)*(y3-y4) - (y1-y3)*(x3-x4) )    /    denominator     -- Determinant for line 1
-    local u = ( (x2-x1)*(y1-y3) - (y2-y1)*(x1-x3) )    /    denominator     -- Determinant for line 2
-    return {t=t, u=u}
 end
 
 

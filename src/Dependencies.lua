@@ -18,8 +18,9 @@ require 'src/gameobjects/Dad'
 require 'src/gameobjects/LightSource'
 require 'src/gameobjects/Flashlight'
 
-require 'src/gameobjects/Interactable'
 require 'src/gameobjects/Battery'
+require 'src/gameobjects/Interactable'
+require 'src/gameobjects/SideDoor'
 
 require 'src/StateHandler'
 require 'src/states/BaseState'

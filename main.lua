@@ -5,8 +5,8 @@ function love.load()
     ZOOM_LEVEL = 1.5
     VIRTUAL_WIDTH, VIRTUAL_HEIGHT = 84 * ZOOM_LEVEL, 48 * ZOOM_LEVEL
     WINDOW_WIDTH, WINDOW_HEIGHT = 630, 360
-    COLOR_DARK  = { 67/255,  82/255,  61/255}
-    COLOR_LIGHT = {199/255, 240/255, 216/255}
+    COLOR_DARK  = { 67/255,  82/255,  61/255, 1}
+    COLOR_LIGHT = {199/255, 240/255, 216/255, 1}
     FPS_LIMIT = 15
     FPS_FRAME_DURATION = 1/FPS_LIMIT
     fpsTimer = 0
@@ -14,6 +14,8 @@ function love.load()
 
     love.window.setTitle('Nokia 3310')
     love.graphics.setDefaultFilter('nearest','nearest')
+    love.graphics.setLineWidth(1)
+    love.graphics.setLineStyle('rough')
     push:setupScreen(
         VIRTUAL_WIDTH, VIRTUAL_HEIGHT,
         WINDOW_WIDTH, WINDOW_HEIGHT,

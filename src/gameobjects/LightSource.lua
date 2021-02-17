@@ -20,7 +20,7 @@ function LightSource:Load()
     end
 end
             
-
+ 
 function LightSource:init(x, y, radius, falloff)
     GameObject.init(self, x or 0, y or 0)
     self.visible = true
@@ -73,8 +73,8 @@ function LightSource:rerender()
     love.graphics.points(self.points)
 end
 
-function LightSource:shadows(osbstruction)
-    love.graphics.polygon('fill',osbstruction:shadow(self.pos))
+function LightSource:shadows(raycaster, debug)
+    love.graphics.polygon('fill',raycaster:shadow(self.pos, debug))
 end
 
 function LightSource:setAngle(angle, rotation)

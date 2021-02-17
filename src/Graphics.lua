@@ -7,13 +7,13 @@ function Graphics:Load()
         ['FatherCycles3'] = love.graphics.newImage('assets/FatherCycles3.png'),
         ['FatherCycles4'] = love.graphics.newImage('assets/FatherCycles4.png'),
         ['ButtonCycles'] = love.graphics.newImage('assets/UISheet.png'),
+        ['SideDoor'] = love.graphics.newImage('assets/doorside.png'),
     }
     cycles = {
         ['DadIdle'] = self:ExtractDadIdle(textures['FatherCycles1']),
         ['DadIdleFL'] = self:ExtractDadIdleFL(textures['FatherCycles1']),
         ['DadIdleFL45'] = self:ExtractDadIdleFL45(textures['FatherCycles2']),
         ['DadIdleFL90'] = self:ExtractDadIdleFL90(textures['FatherCycles2']),
-
         ['DadWalk'] = self:ExtractDadWalk(textures['FatherCycles1']),
         ['DadWalkFL'] = self:ExtractDadWalkFL(textures['FatherCycles1']),
         ['DadWalkFL45'] = self:ExtractDadWalkFL45(textures['FatherCycles2']),
@@ -31,6 +31,8 @@ function Graphics:Load()
         ['ButtonIndicator'] = self:ExtractButtonPress(textures['ButtonCycles']),
         ['UpArrowIndicator'] = self:ExtractUpArrowIndicator(textures['ButtonCycles']),
         ['SideArrowIndicator'] = self:ExtractSideArrowIndicator(textures['ButtonCycles']),
+
+        ['SideDoor'] = self:ExtractSideDoor(textures['SideDoor'])
     }
     sprites = {
         ['SideA_TV'] = love.graphics.newImage('assets/ForegroundObjects/sideA_TV.png'),
@@ -80,7 +82,7 @@ function Graphics:ExtractDadIdleFL45(spriteSheet)
 end
 
 function Graphics:ExtractDadIdleFL90(spriteSheet)
-    return self:ExtractCycle(spriteSheet, 27, 31, 0, 33, 9)
+    return self:ExtractCycle(spriteSheet, 27, 31, 0, 32, 9)
 end
 
 function Graphics:ExtractDadWalk(spriteSheet)
@@ -128,7 +130,7 @@ function Graphics:ExtractDadStairsEnter(spritesheet)
 end
 
 function Graphics:ExtractButtonPress(spriteSheet)
-    return self:ExtractCycle(spriteSheet, 7, 7, 0, 0, 8)
+    return self:ExtractCycle(spriteSheet, 7, 7, 42, 0, 2)
 end
 
 function Graphics:ExtractUpArrowIndicator(spriteSheet)
@@ -141,4 +143,8 @@ end
 
 function Graphics:ExtractBatteryPower(spriteSheet)
     return self:ExtractCycle(spriteSheet, 8, 4, 0, 8, 6)
+end
+
+function Graphics:ExtractSideDoor(spriteSheet)
+    return self:ExtractCycle(spriteSheet, 31, 45, 0, 0, 5)
 end

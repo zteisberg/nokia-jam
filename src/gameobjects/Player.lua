@@ -61,7 +61,7 @@ function Player:setStairsUp()
         self:setIdle()
         self.angle = 0
         self.pos.y = self.pos.y - 45
-        self.pos.x = self.pos.x + 40 * self.stairDirection
+        self.pos.x = self.pos.x + 33 * self.stairDirection
     end
 end
 

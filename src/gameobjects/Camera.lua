@@ -32,7 +32,7 @@ function Camera:update()
 
     if self.center then
         d.x = d.x - self.speed/2 * player.direction
-        if math.abs(1 - relativePos.x * 2) < 0.075 then self.center = false end
+        if math.abs(1 - relativePos.x * 2) < 0.1 then self.center = false end
     end
 
     if player.state == 'walking' or player.state == 'stairs' or toggleMouse or self.center then
