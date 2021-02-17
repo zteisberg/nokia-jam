@@ -5,7 +5,7 @@ function Battery:init(x,y,active,globalPositioning)
     self.source = textures['ButtonCycles']
     self.cycle = cycles['BatteryPower']
     self.pos = {x=x, y=y}
-    self.charge = 15*30
+    self.charge = 15*3
 end
 
 function Battery:update()

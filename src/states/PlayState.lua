@@ -49,13 +49,14 @@ function PlayState:init()
     lightSources['flashlight'] = Flashlight(math.pi/3, 100)
     lightSources['headlight'] = LightSource(-100,-100,20, {.7, .03})
     lightSources['sideA-bathroom'] = LightSource(53, 130, 90, .5)
+    lightSources['sideA-bedroom'] = LightSource(47, 70, 120, .5)
     lightSources['sideA-tv'] = LightSource(60, 165, 50, .4)
     lightSources['sideA-tv']:setAngle(math.pi *6/8, math.pi /8)
     lightSources['sideA-tv']:setAnimation(50, 70)
     lightSources['sideA-tv'].offset = {x=50, y=7}
     -- lightSources['sideA-bathroom'].visible = false
     lightSources['sideA-tv'].visible = false
-    lightSources['headlight'].visible = false
+    -- lightSources['headlight'].visible = false
 
     walls = {{{x=5,y=58}, {x=175,y=58}, {x=175,y=166}, {x=5,y=166}}}
     walls[#walls + 1] = {{x=5,y=112}, {x=123,y=112}}
@@ -84,11 +85,14 @@ function PlayState:update()
     for key, light in pairs(lightSources) do light:update() end
     if lightSources['flashlight'].visible then
         ui['battery'].charge = math.max(ui['battery'].charge - 0.1, 0)
-        local adjustment = math.sqrt(ui['battery'].charge/90)
-        if ui['battery'].charge < 90 then
+        local adjustment = math.sqrt(math.sqrt(ui['battery'].charge/45))
+        if ui['battery'].charge < 45 then
             if player.state == 'enterStairs' or player.state == 'exitStairs' then
                 lightSources['flashlight'].radius = 40 * adjustment
             else lightSources['flashlight'].angle = math.pi/3 * adjustment end
+            if math.floor(ui['battery'].charge * 10 + 0.5) == 1 then
+                lightSources['flashlight'].angle = 0.01
+            end
         end
     end
     lightSources['headlight'].pos = {
